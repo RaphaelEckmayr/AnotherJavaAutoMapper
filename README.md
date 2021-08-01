@@ -1,0 +1,1 @@
+# AnotherJavaAutoMapper: Work in progress.
