@@ -1,8 +1,6 @@
 package net.AJAM.mapper.test;
 
-import net.AJAM.mapper.Mapper;
-import net.AJAM.mapper.Mapping;
-import net.AJAM.mapper.MappingType;
+import net.AJAM.mapper.*;
 import net.AJAM.mapper.test.Profiles.IgnoreAllProfile;
 import net.AJAM.mapper.test.Profiles.TestProfile;
 import net.AJAM.mapper.test.Profiles.TestProfile1;
@@ -13,12 +11,203 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class UnitTests
 {
     @Test
-    @DisplayName("Test strict mapping type")
-    public void testMapStrict()
+    @DisplayName("Test map method 1")
+    public void testMap1()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new Mapper(false);
+
+        var actual = mapper.map(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test map method 2")
+    public void testMap2()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new Mapper(false);
+
+        var actual = mapper.map(new Person2(), person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test map method 3")
+    public void testMap3()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+
+        Mapper mapper = new Mapper(false);
+
+        var actual = mapper.map(Person2.class, person, MappingType.LOOSE);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test map method 4")
+    public void testMap4()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+
+        Mapper mapper = new Mapper(false);
+
+        var actual = mapper.map(new Person2(), person, MappingType.LOOSE);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test map async method 1")
+    public void testMap1Async()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new Mapper(false);
+
+        var actual = mapper.mapAsync(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual.join());
+    }
+
+    @Test
+    @DisplayName("Test map async method 2")
+    public void testMap2Async()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new Mapper(false);
+
+        var actual = mapper.mapAsync(new Person2(), person);
+
+        Assertions.assertEquals(expected, actual.join());
+    }
+
+    @Test
+    @DisplayName("Test map async method 3")
+    public void testMap3Async()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+
+        Mapper mapper = new Mapper(false);
+
+        var actual = mapper.mapAsync(Person2.class, person, MappingType.LOOSE);
+
+        Assertions.assertEquals(expected, actual.join());
+    }
+
+    @Test
+    @DisplayName("Test map async method 4")
+    public void testMapAsync4()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+
+        Mapper mapper = new Mapper(false);
+
+        var actual = mapper.mapAsync(new Person2(), person, MappingType.LOOSE);
+
+        Assertions.assertEquals(expected, actual.join());
+    }
+
+    @Test
+    @DisplayName("Test map list method 1")
+    public void testMapList1()
+    {
+        List<Person1> personList = new ArrayList<>();
+        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512"));
+        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10", LocalDate.of(2018, 10,1), ""));
+
+        List<Person2> expected = new ArrayList<>();
+        expected.add(new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null));
+        expected.add(new Person2("1", "jon do", "idk@what", LocalDate.of(2001, 12,10), "2018-10-01", null));
+
+        Mapper mapper = new Mapper(false);
+
+        List<Person2> actual = mapper.mapList(Person2.class, personList, MappingType.LOOSE);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test map list method 2")
+    public void testMapList2()
+    {
+        List<Person1> personList = new ArrayList<>();
+        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512"));
+        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10", LocalDate.of(2018, 10,1), ""));
+
+        List<Person2> expected = new ArrayList<>();
+        expected.add(new Person2("12", "john doe", "john.doe@foo.bar", null, null, null));
+        expected.add(new Person2("1", "jon do", "idk@what", null, null, null));
+
+        Mapper mapper = new Mapper(false);
+
+        List<Person2> actual = mapper.mapList(Person2.class, personList);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test map list async method 1")
+    public void testMapListAsync1()
+    {
+        List<Person1> personList = new ArrayList<>();
+        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512"));
+        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10", LocalDate.of(2018, 10,1), ""));
+
+        List<Person2> expected = new ArrayList<>();
+        expected.add(new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null));
+        expected.add(new Person2("1", "jon do", "idk@what", LocalDate.of(2001, 12,10), "2018-10-01", null));
+
+        Mapper mapper = new Mapper(false);
+
+        CompletableFuture<List<Person2>> actual = mapper.mapListAsync(Person2.class, personList, MappingType.LOOSE);
+
+        Assertions.assertEquals(expected, actual.join());
+    }
+
+    @Test
+    @DisplayName("Test map list async method 2")
+    public void testMapListAsync2()
+    {
+        List<Person1> personList = new ArrayList<>();
+        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512"));
+        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10", LocalDate.of(2018, 10,1), ""));
+
+        List<Person2> expected = new ArrayList<>();
+        expected.add(new Person2("12", "john doe", "john.doe@foo.bar", null, null, null));
+        expected.add(new Person2("1", "jon do", "idk@what", null, null, null));
+
+        Mapper mapper = new Mapper(false);
+
+        CompletableFuture<List<Person2>> actual = mapper.mapListAsync(Person2.class, personList);
+
+        Assertions.assertEquals(expected, actual.join());
+    }
+
+    @Test
+    @DisplayName("Test strict mapping type as parameter")
+    public void testMapStrictParameter()
     {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
@@ -30,8 +219,8 @@ public class UnitTests
     }
 
     @Test
-    @DisplayName("Test medium mapping type")
-    public void testMapMedium()
+    @DisplayName("Test medium mapping type as parameter")
+    public void testMapMediumParameter()
     {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
@@ -43,14 +232,56 @@ public class UnitTests
     }
 
     @Test
-    @DisplayName("Test loose mapping type")
-    public void testMapLoose()
+    @DisplayName("Test loose mapping type as parameter")
+    public void testMapLooseParameter()
     {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
         var actual = mapper.map(Person2.class, person, MappingType.LOOSE);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test strict mapping type as mapping")
+    public void testMapStrictMapping()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new Mapper(false);
+        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT));
+        var actual = mapper.map(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test medium mapping type as mapping")
+    public void testMapMediumMapping()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new Mapper(false);
+        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.MEDIUM));
+        var actual = mapper.map(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test loose mapping type as mapping")
+    public void testMapLooseMapping()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+
+        Mapper mapper = new Mapper(false);
+        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.LOOSE));
+        var actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -90,43 +321,108 @@ public class UnitTests
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
-        //hierarchy = Mapping, Parameter, Constructor of mapper
-        Mapper mapper = new Mapper(MappingType.LOOSE,false);
-        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.MEDIUM));
-        var actual = mapper.map(Person2.class, person, MappingType.STRICT);
+        //hierarchy = Parameter, Mapping
+        Mapper mapper = new Mapper(false);
+        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT));
+        var actual = mapper.map(Person2.class, person, MappingType.MEDIUM);
 
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    @DisplayName("Test addMapping on Mapper")
+    @DisplayName("Test add mapping on Mapper")
     public void testAddMapping()
     {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
 
         Mapper mapper = new Mapper(false);
-        mapper.addMapping(new Mapping<>(Person1.class, Person2.class)
-                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2)));
+
+        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
+        mapper.addMapping(mapping);
 
         var actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
+        Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
+    @DisplayName("Test add and remove mapping on Mapper")
+    public void testAddRemoveMapping()
+    {
+        Mapper mapper = new Mapper(false);
+
+        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
+        mapper.addMapping(mapping);
+
+        Assertions.assertTrue(mapper.getMappings().contains(mapping));
+
+        mapper.removeMapping(mapping);
+
+        Assertions.assertFalse(mapper.getMappings().contains(mapping));
+    }
+
+    @Test
+    @DisplayName("Test add and remove mappings on Mapper 1")
+    public void testAddRemoveMappings1()
+    {
+        Mapper mapper = new Mapper(false);
+
+        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
+
+        Mapping mapping2 = new Mapping<>(Person1.class, Person2.class)
+                .ignore(Person1::geteMail);
+
+        List<Mapping<?,?>> mappings = new ArrayList<>();
+        mappings.add(mapping);
+        mappings.add(mapping2);
+
+        mapper.addMappings(mappings);
+
+        Assertions.assertTrue(mapper.getMappings().contains(mapping));
+        Assertions.assertTrue(mapper.getMappings().contains(mapping2));
+
+        mapper.removeMappings(mappings);
+
+        Assertions.assertFalse(mapper.getMappings().contains(mapping));
+        Assertions.assertFalse(mapper.getMappings().contains(mapping2));
+    }
+
+    @Test
+    @DisplayName("Test add and remove mappings on Mapper 2")
+    public void testAddRemoveMappings2()
+    {
+        Mapper mapper = new Mapper(false);
+
+        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
+
+        Mapping mapping2 = new Mapping<>(Person1.class, Person2.class)
+                .ignore(Person1::geteMail);
+
+        mapper.addMappings(mapping, mapping2);
+
+        Assertions.assertTrue(mapper.getMappings().contains(mapping));
+        Assertions.assertTrue(mapper.getMappings().contains(mapping2));
+
+        mapper.removeMappings(mapping, mapping2);
+
+        Assertions.assertFalse(mapper.getMappings().contains(mapping));
+        Assertions.assertFalse(mapper.getMappings().contains(mapping2));
+    }
+
+    @Test
     @DisplayName("Test remove Profile")
-    public void testAddRemoveProfile()
+    public void testRemoveProfile()
     {
         Mapper mapper = new Mapper(true);
 
-        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
-                .ignore(Person1::getBirthDate)
-                .ignore(Person1::getPhone)
-                .ignore(Person1::geteMail)
-                .ignore(Person1::getId)
-                .ignore(Person1::getName)
-                .ignore(Person1::getRegistrationDate);
+        Profile prof1 = new IgnoreAllProfile();
+        Mapping mapping = prof1.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertTrue(mapper.getProfiles().contains(new IgnoreAllProfile()));
@@ -139,18 +435,13 @@ public class UnitTests
 
     @Test
     @DisplayName("Test add and removeProfile")
-    public void testRemoveProfile()
+    public void testAddRemoveProfile()
     {
         Mapper mapper = new Mapper(false);
         mapper.addProfile(new IgnoreAllProfile());
 
-        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
-                .ignore(Person1::getBirthDate)
-                .ignore(Person1::getPhone)
-                .ignore(Person1::geteMail)
-                .ignore(Person1::getId)
-                .ignore(Person1::getName)
-                .ignore(Person1::getRegistrationDate);
+        Profile prof1 = new IgnoreAllProfile();
+        Mapping mapping = prof1.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertTrue(mapper.getProfiles().contains(new IgnoreAllProfile()));
@@ -159,5 +450,62 @@ public class UnitTests
 
         Assertions.assertFalse(mapper.getMappings().contains(mapping));
         Assertions.assertFalse(mapper.getProfiles().contains(new IgnoreAllProfile()));
+    }
+
+    @Test
+    @DisplayName("Test add and remove Profiles 1")
+    public void testAddRemoveProfiles1()
+    {
+        Mapper mapper = new Mapper(false);
+        mapper.addProfiles(new IgnoreAllProfile(), new TestProfile());
+
+        Profile prof1 = new IgnoreAllProfile();
+        Mapping mapping = prof1.getMappings().get(0);
+
+        Profile prof2 = new TestProfile();
+        Mapping mapping2 = prof2.getMappings().get(0);
+
+        Assertions.assertTrue(mapper.getMappings().contains(mapping));
+        Assertions.assertTrue(mapper.getMappings().contains(mapping2));
+        Assertions.assertTrue(mapper.getProfiles().contains(new IgnoreAllProfile()));
+        Assertions.assertTrue(mapper.getProfiles().contains(new TestProfile()));
+
+        mapper.removeProfiles(new IgnoreAllProfile(), new TestProfile());
+
+        Assertions.assertFalse(mapper.getMappings().contains(mapping));
+        Assertions.assertFalse(mapper.getMappings().contains(mapping2));
+        Assertions.assertFalse(mapper.getProfiles().contains(new IgnoreAllProfile()));
+        Assertions.assertFalse(mapper.getProfiles().contains(new TestProfile()));
+    }
+
+    @Test
+    @DisplayName("Test add and remove Profiles 2")
+    public void testAddRemoveProfiles2()
+    {
+        Mapper mapper = new Mapper(false);
+
+        List<Profile> profiles = new ArrayList<>();
+        profiles.add(new IgnoreAllProfile());
+        profiles.add(new TestProfile());
+
+        mapper.addProfiles(profiles);
+
+        Profile prof1 = new IgnoreAllProfile();
+        Mapping mapping = prof1.getMappings().get(0);
+
+        Profile prof2 = new TestProfile();
+        Mapping mapping2 = prof2.getMappings().get(0);
+
+        Assertions.assertTrue(mapper.getMappings().contains(mapping));
+        Assertions.assertTrue(mapper.getMappings().contains(mapping2));
+        Assertions.assertTrue(mapper.getProfiles().contains(profiles.get(0)));
+        Assertions.assertTrue(mapper.getProfiles().contains(profiles.get(1)));
+
+        mapper.removeProfiles(profiles);
+
+        Assertions.assertFalse(mapper.getMappings().contains(mapping));
+        Assertions.assertFalse(mapper.getMappings().contains(mapping2));
+        Assertions.assertFalse(mapper.getProfiles().contains(profiles.get(0)));
+        Assertions.assertFalse(mapper.getProfiles().contains(profiles.get(1)));
     }
 }

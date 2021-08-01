@@ -7,10 +7,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class Mapper
@@ -20,26 +17,9 @@ public class Mapper
 
     private final List<Profile> profiles = new ArrayList<>();
 
-    private MappingType defaultMappingType = MappingType.STRICT;
-
-
-    public Mapper(MappingType defaultMappingType)
-    {
-        this.defaultMappingType = defaultMappingType;
-        init();
-    }
-
     public Mapper()
     {
         init();
-    }
-
-
-    public Mapper(MappingType defaultMappingType, boolean readProfiles)
-    {
-        this.defaultMappingType = defaultMappingType;
-        if(readProfiles)
-            init();
     }
 
     public Mapper(boolean readProfiles)
@@ -51,13 +31,13 @@ public class Mapper
 
     public <T,S> T map(Class<T> targetType, S source)
     {
-        return map(targetType, source, defaultMappingType);
+        return map(targetType, source, null);
     }
 
 
     public <T, S> T map(T target, S source)
     {
-        return map(target, source, defaultMappingType);
+        return map(target, source, null);
     }
 
 
@@ -108,21 +88,30 @@ public class Mapper
 
     public <T,S> List<T> mapList(Class<T> targetType, List<S> source)
     {
+        return mapList(targetType, source, null);
+    }
+
+    public <T,S> List<T> mapList(Class<T> targetType, List<S> source, MappingType mappingType)
+    {
         List<T> target = new ArrayList<>();
 
         for (S item : source)
         {
-            target.add(map(targetType, item));
+            target.add(map(targetType, item, mappingType));
         }
 
         return target;
     }
 
 
-
     public <T,S> CompletableFuture<List<T>> mapListAsync(Class<T> targetType, List<S> source)
     {
         return  CompletableFuture.supplyAsync(() -> mapList(targetType, source));
+    }
+
+    public <T,S> CompletableFuture<List<T>> mapListAsync(Class<T> targetType, List<S> source, MappingType mappingType)
+    {
+        return  CompletableFuture.supplyAsync(() -> mapList(targetType, source, mappingType));
     }
 
 
@@ -147,6 +136,19 @@ public class Mapper
         mappings.addAll(profile.getMappings());
     }
 
+    public void addProfiles(List<Profile> profiles)
+    {
+        for(Profile profile : profiles) {
+            addProfile(profile);
+        }
+    }
+
+    public void addProfiles(Profile... profiles)
+    {
+        for(Profile profile : profiles) {
+            addProfile(profile);
+        }
+    }
 
     public boolean removeProfile(Class<? extends Profile> profileClass) {
         try
@@ -165,6 +167,28 @@ public class Mapper
         return mappings.removeAll(profile.getMappings());
     }
 
+    public boolean removeProfiles(List<Profile> profiles) {
+        boolean result = true;
+
+        for (Profile profile : profiles) {
+            if(!removeProfile(profile))
+                result = false;
+        }
+
+        return result;
+    }
+
+    public boolean removeProfiles(Profile... profiles) {
+        boolean result = true;
+
+        for (Profile profile : profiles) {
+            if(!removeProfile(profile))
+                result = false;
+        }
+
+        return result;
+    }
+
     public void addMapping(Mapping<?,?> mapping)
     {
         mappings.add(mapping);
@@ -175,15 +199,24 @@ public class Mapper
         return mappings.remove(mapping);
     }
 
-
     public void addMappings(List<Mapping<?,?>> mappingList)
     {
         mappings.addAll(mappingList);
     }
 
+    public void addMappings(Mapping<?,?>... mappingList)
+    {
+        mappings.addAll(Arrays.asList(mappingList));
+    }
+
     public boolean removeMappings(List<Mapping<?,?>> mappingList)
     {
         return mappings.removeAll(mappingList);
+    }
+
+    public boolean removeMappings(Mapping<?,?>... mappingList)
+    {
+        return mappings.removeAll(Arrays.asList(mappingList));
     }
 
     public List<Mapping<?,?>> getMappings()

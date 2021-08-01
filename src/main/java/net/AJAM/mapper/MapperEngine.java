@@ -11,6 +11,7 @@ import java.util.function.Function;
 public class MapperEngine
 {
     private static final int CACHE_SIZE = 200;
+    private static final MappingType DEFAULT_MAPPING_TYPE = MappingType.MEDIUM;
 
     private static MapperEngine instance;
 
@@ -142,12 +143,14 @@ public class MapperEngine
         return props;
     }
 
-    private MappingType getUsedMappingType(MappingType defaultMappingType, Mapping<?,?> mapping)
+    private MappingType getUsedMappingType(MappingType callMappingType, Mapping<?,?> mapping)
     {
-        if (mapping != null && mapping.getMappingType() != null)
+        if (callMappingType != null)
+            return callMappingType;
+        else if (mapping != null && mapping.getMappingType() != null)
             return mapping.getMappingType();
 
-        return defaultMappingType;
+        return DEFAULT_MAPPING_TYPE;
     }
 
     private <S,T> void doMap(PropertyDescriptor write, PropertyDescriptor read, S source, T target, MappingType usedMappingType)
