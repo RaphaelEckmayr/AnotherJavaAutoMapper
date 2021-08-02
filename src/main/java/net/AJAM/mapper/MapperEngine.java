@@ -16,7 +16,7 @@ public class MapperEngine
     private static MapperEngine instance;
 
     private List<Conversion<?, ?>> conversions = new ArrayList<>();
-    private final Map<Class<?>, List<PropertyDescriptor>> cache = Collections.synchronizedMap(new LinkedHashMap<>()
+    private final Map<Class<?>, List<PropertyDescriptor>> cache = Collections.synchronizedMap(new LinkedHashMap<Class<?>, List<PropertyDescriptor>>()
     {
         @Override
         protected boolean removeEldestEntry(final Map.Entry eldest)
@@ -157,8 +157,8 @@ public class MapperEngine
     {
         try
         {
-            var writePropertyType = write.getPropertyType();
-            var readPropertyType = read.getPropertyType();
+            Class<?> writePropertyType = write.getPropertyType();
+            Class<?> readPropertyType = read.getPropertyType();
 
             if (writePropertyType == readPropertyType)
                 write.getWriteMethod().invoke(target, read.getReadMethod().invoke(source));

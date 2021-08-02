@@ -18,15 +18,38 @@ import java.util.concurrent.CompletableFuture;
 public class UnitTests
 {
     @Test
+    @DisplayName("Usual way vs Mapper")
+    public void testBasics()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+
+        Person2 person2 = new Person2();
+        person2.setName(person.getName());
+        person2.seteMail(person.geteMail());
+        person2.setId(person.getId() + "");
+        person2.setRegistrationDate(person.registrationDate.toString());
+        person2.setBirthDate(LocalDate.parse(person.getBirthDate()));
+        person2.setPhone2(person.getPhone());
+
+        Mapper mapper = new Mapper(false);
+        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).forMember(Person1::getPhone, options -> options.mapTo(Person2::setPhone2)));
+        Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
+
+        Assertions.assertEquals(person2, actual);
+    }
+
+    @Test
     @DisplayName("Test map method 1")
     public void testMap1()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
-
-        var actual = mapper.map(Person2.class, person);
+        Person2 actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -35,12 +58,13 @@ public class UnitTests
     @DisplayName("Test map method 2")
     public void testMap2()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
 
-        var actual = mapper.map(new Person2(), person);
+        Person2 actual = mapper.map(new Person2(), person);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -49,12 +73,14 @@ public class UnitTests
     @DisplayName("Test map method 3")
     public void testMap3()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12,12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
 
-        var actual = mapper.map(Person2.class, person, MappingType.LOOSE);
+        Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -63,12 +89,14 @@ public class UnitTests
     @DisplayName("Test map method 4")
     public void testMap4()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12,12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
 
-        var actual = mapper.map(new Person2(), person, MappingType.LOOSE);
+        Person2 actual = mapper.map(new Person2(), person, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -77,12 +105,13 @@ public class UnitTests
     @DisplayName("Test map async method 1")
     public void testMap1Async()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
 
-        var actual = mapper.mapAsync(Person2.class, person);
+        CompletableFuture<Person2> actual = mapper.mapAsync(Person2.class, person);
 
         Assertions.assertEquals(expected, actual.join());
     }
@@ -91,12 +120,13 @@ public class UnitTests
     @DisplayName("Test map async method 2")
     public void testMap2Async()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
 
-        var actual = mapper.mapAsync(new Person2(), person);
+        CompletableFuture<Person2> actual = mapper.mapAsync(new Person2(), person);
 
         Assertions.assertEquals(expected, actual.join());
     }
@@ -105,12 +135,14 @@ public class UnitTests
     @DisplayName("Test map async method 3")
     public void testMap3Async()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12,12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
 
-        var actual = mapper.mapAsync(Person2.class, person, MappingType.LOOSE);
+        CompletableFuture<Person2> actual = mapper.mapAsync(Person2.class, person, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual.join());
     }
@@ -119,12 +151,14 @@ public class UnitTests
     @DisplayName("Test map async method 4")
     public void testMapAsync4()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12,12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
 
-        var actual = mapper.mapAsync(new Person2(), person, MappingType.LOOSE);
+        CompletableFuture<Person2> actual = mapper.mapAsync(new Person2(), person, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual.join());
     }
@@ -134,12 +168,15 @@ public class UnitTests
     public void testMapList1()
     {
         List<Person1> personList = new ArrayList<>();
-        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512"));
+        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512"));
         personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10", LocalDate.of(2018, 10,1), ""));
 
         List<Person2> expected = new ArrayList<>();
-        expected.add(new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null));
-        expected.add(new Person2("1", "jon do", "idk@what", LocalDate.of(2001, 12,10), "2018-10-01", null));
+        expected.add(new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12,12), "2020-12-10", null));
+        expected.add(new Person2("1", "jon do", "idk@what", LocalDate.of(2001, 12,10),
+                "2018-10-01", null));
 
         Mapper mapper = new Mapper(false);
 
@@ -153,8 +190,10 @@ public class UnitTests
     public void testMapList2()
     {
         List<Person1> personList = new ArrayList<>();
-        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512"));
-        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10", LocalDate.of(2018, 10,1), ""));
+        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512"));
+        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10",
+                LocalDate.of(2018, 10,1), ""));
 
         List<Person2> expected = new ArrayList<>();
         expected.add(new Person2("12", "john doe", "john.doe@foo.bar", null, null, null));
@@ -172,12 +211,16 @@ public class UnitTests
     public void testMapListAsync1()
     {
         List<Person1> personList = new ArrayList<>();
-        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512"));
-        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10", LocalDate.of(2018, 10,1), ""));
+        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512"));
+        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10",
+                LocalDate.of(2018, 10,1), ""));
 
         List<Person2> expected = new ArrayList<>();
-        expected.add(new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null));
-        expected.add(new Person2("1", "jon do", "idk@what", LocalDate.of(2001, 12,10), "2018-10-01", null));
+        expected.add(new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12,12), "2020-12-10", null));
+        expected.add(new Person2("1", "jon do", "idk@what",
+                LocalDate.of(2001, 12,10), "2018-10-01", null));
 
         Mapper mapper = new Mapper(false);
 
@@ -191,8 +234,10 @@ public class UnitTests
     public void testMapListAsync2()
     {
         List<Person1> personList = new ArrayList<>();
-        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512"));
-        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10", LocalDate.of(2018, 10,1), ""));
+        personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512"));
+        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10",
+                LocalDate.of(2018, 10,1), ""));
 
         List<Person2> expected = new ArrayList<>();
         expected.add(new Person2("12", "john doe", "john.doe@foo.bar", null, null, null));
@@ -209,11 +254,12 @@ public class UnitTests
     @DisplayName("Test strict mapping type as parameter")
     public void testMapStrictParameter()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
-        var actual = mapper.map(Person2.class, person, MappingType.STRICT);
+        Person2 actual = mapper.map(Person2.class, person, MappingType.STRICT);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -222,11 +268,12 @@ public class UnitTests
     @DisplayName("Test medium mapping type as parameter")
     public void testMapMediumParameter()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
-        var actual = mapper.map(Person2.class, person, MappingType.MEDIUM);
+        Person2 actual = mapper.map(Person2.class, person, MappingType.MEDIUM);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -235,11 +282,27 @@ public class UnitTests
     @DisplayName("Test loose mapping type as parameter")
     public void testMapLooseParameter()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12,12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
-        var actual = mapper.map(Person2.class, person, MappingType.LOOSE);
+        Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test none mapping type as parameter")
+    public void testMapNoneParameter()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new Mapper(false);
+        Person2 actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -248,12 +311,13 @@ public class UnitTests
     @DisplayName("Test strict mapping type as mapping")
     public void testMapStrictMapping()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
         mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT));
-        var actual = mapper.map(Person2.class, person);
+        Person2 actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -262,12 +326,13 @@ public class UnitTests
     @DisplayName("Test medium mapping type as mapping")
     public void testMapMediumMapping()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
         mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.MEDIUM));
-        var actual = mapper.map(Person2.class, person);
+        Person2 actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -276,12 +341,14 @@ public class UnitTests
     @DisplayName("Test loose mapping type as mapping")
     public void testMapLooseMapping()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12,12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
         mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.LOOSE));
-        var actual = mapper.map(Person2.class, person);
+        Person2 actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -290,12 +357,13 @@ public class UnitTests
     @DisplayName("Test ignore in profile")
     public void testIgnore()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
         mapper.addProfile(TestProfile.class);
-        var actual = mapper.map(Person2.class, person, MappingType.LOOSE);
+        Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -304,12 +372,14 @@ public class UnitTests
     @DisplayName("Test mapTo in profile")
     public void testMapTo()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
 
         Mapper mapper = new Mapper(false);
         mapper.addProfile(TestProfile1.class);
-        var actual = mapper.map(Person2.class, person, MappingType.LOOSE);
+        Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -318,13 +388,14 @@ public class UnitTests
     @DisplayName("Test MappingType hierarchy")
     public void testMappingTypeHierarchy()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         //hierarchy = Parameter, Mapping
         Mapper mapper = new Mapper(false);
         mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT));
-        var actual = mapper.map(Person2.class, person, MappingType.MEDIUM);
+        Person2 actual = mapper.map(Person2.class, person, MappingType.MEDIUM);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -333,8 +404,10 @@ public class UnitTests
     @DisplayName("Test add mapping on Mapper")
     public void testAddMapping()
     {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12", LocalDate.of(2020, 12,10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
 
         Mapper mapper = new Mapper(false);
 
@@ -342,7 +415,7 @@ public class UnitTests
                 .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
         mapper.addMapping(mapping);
 
-        var actual = mapper.map(Person2.class, person, MappingType.LOOSE);
+        Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertEquals(expected, actual);
