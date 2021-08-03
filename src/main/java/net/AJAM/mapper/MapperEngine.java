@@ -79,11 +79,9 @@ public class MapperEngine
 
     private <S,T> void handleTranslations(Mapping<S,T> mapping, S source, T target)
     {
-        for (Translation translation : mapping.getTranslations())
+        for (Translation<S,T,?> translation : mapping.getTranslations())
         {
-            PropertySetter<T, Object> setter = translation.getTarget().getSetter();
-            if (setter != null)
-                setter.set(target, translation.getSource().get(source));
+            translation.translate(source, target);
         }
     }
 

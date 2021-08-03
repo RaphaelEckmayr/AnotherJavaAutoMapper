@@ -10,12 +10,12 @@ public class IgnoreAllProfile extends Profile
     public IgnoreAllProfile()
     {
         addMapping(new Mapping<>(Person1.class, Person2.class)
-                .ignore(Person1::getBirthDate)
-                .ignore(Person1::getPhone)
-                .ignore(Person1::geteMail)
-                .ignore(Person1::getId)
-                .ignore(Person1::getName)
-                .ignore(Person1::getRegistrationDate)
+                .forMember(Person1::getBirthDate, opt -> opt.ignore())
+                .forMember(Person1::getPhone, opt -> opt.ignore())
+                .forMember(Person1::geteMail, opt -> opt.ignore())
+                .forMember(Person1::getId, opt -> opt.ignore())
+                .forMember(Person1::getName, opt -> opt.ignore())
+                .forMember(Person1::getRegistrationDate, opt -> opt.ignore())
         );
     }
 }

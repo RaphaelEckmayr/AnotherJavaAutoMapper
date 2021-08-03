@@ -1,13 +1,13 @@
 package net.AJAM.mapper;
 
-import de.cronn.reflection.util.PropertyUtils;
-import de.cronn.reflection.util.TypedPropertyGetter;
 import net.AJAM.mapper.interfaces.PropertyGetter;
 import net.AJAM.mapper.interfaces.OptionsBuilder;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Mapping <S, T>
 {
@@ -30,20 +30,15 @@ public class Mapping <S, T>
     {
         MappingOption<T,V> mappingOption = option.build(new MappingOption<>());
 
-        if(mappingOption.isIgnore())
-            ignore(source);
-
-        translations.add(new Translation(source, mappingOption));
+        translations.add(new TranslationOneToOne<>(source, mappingOption));
         return this;
     }
 
-    public Mapping<S,T> ignore(PropertyGetter<S,?> getter)
+    public <V> Mapping<S,T> forMembers(PropertyGetter<S,V[]> source, OptionsBuilder<MappingOption<T,V>>... options)
     {
-        TypedPropertyGetter<S,?> typedGetter = (TypedPropertyGetter<S, Object>) getter::get;
+        List<MappingOption<T,V>> mappingOptions = Arrays.stream(options).map(x -> x.build(new MappingOption<>())).collect(Collectors.toList());
 
-        Method getterMethod = PropertyUtils.findMethodByGetter(source, typedGetter);
-        skippedProperties.add(getterMethod);
-
+        translations.add(new TranslationOneToMany<S,T,V>(source, mappingOptions));
         return this;
     }
 

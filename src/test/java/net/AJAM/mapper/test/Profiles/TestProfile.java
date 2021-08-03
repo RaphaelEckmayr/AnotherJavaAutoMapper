@@ -11,7 +11,6 @@ public class TestProfile extends Profile
     public TestProfile()
     {
         addMapping(new Mapping<>(Person1.class, Person2.class)
-            .forMember(Person1::getPhone, MappingOption::ignore)
-            .ignore(Person1::getBirthDate));
+            .forMember(Person1::getPhone, MappingOption::ignore));
     }
 }

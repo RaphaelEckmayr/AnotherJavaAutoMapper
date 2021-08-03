@@ -6,6 +6,7 @@ import net.AJAM.mapper.test.Profiles.TestProfile;
 import net.AJAM.mapper.test.Profiles.TestProfile1;
 import net.AJAM.mapper.test.Utils.Person1;
 import net.AJAM.mapper.test.Utils.Person2;
+import net.AJAM.mapper.test.Utils.Person3;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -359,7 +360,7 @@ public class UnitTests
     {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
                 LocalDate.of(2020, 12,10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, "2020-12-10", null);
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
         mapper.addProfile(TestProfile.class);
@@ -448,7 +449,7 @@ public class UnitTests
                 .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
 
         Mapping mapping2 = new Mapping<>(Person1.class, Person2.class)
-                .ignore(Person1::geteMail);
+                .forMember(Person1::geteMail, MappingOption::ignore);
 
         List<Mapping<?,?>> mappings = new ArrayList<>();
         mappings.add(mapping);
@@ -475,7 +476,7 @@ public class UnitTests
                 .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
 
         Mapping mapping2 = new Mapping<>(Person1.class, Person2.class)
-                .ignore(Person1::geteMail);
+                .forMember(Person1::geteMail, MappingOption::ignore);
 
         mapper.addMappings(mapping, mapping2);
 
@@ -580,5 +581,21 @@ public class UnitTests
         Assertions.assertFalse(mapper.getMappings().contains(mapping2));
         Assertions.assertFalse(mapper.getProfiles().contains(profiles.get(0)));
         Assertions.assertFalse(mapper.getProfiles().contains(profiles.get(1)));
+    }
+
+    @Test
+    @DisplayName("Test one to many")
+    public void testOneToMany()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person3 expected = new Person3(12, "john", "doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+
+        Mapper mapper = new Mapper(false);
+        mapper.addMapping(new Mapping<>(Person1.class, Person3.class).forMembers(x -> x.getName().split(" "), opt -> opt.mapTo(Person3::setFirstname), x -> x.mapTo(Person3::setLastname)));
+        Person3 actual = mapper.map(Person3.class, person, MappingType.STRICT);
+
+        Assertions.assertEquals(expected, actual);
     }
 }
