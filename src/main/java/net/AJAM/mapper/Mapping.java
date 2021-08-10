@@ -1,7 +1,9 @@
-package net.AJAM.mapper;
+package net.AJAM.Mapper;
 
-import net.AJAM.mapper.interfaces.PropertyGetter;
-import net.AJAM.mapper.interfaces.OptionsBuilder;
+import de.cronn.reflection.util.PropertyUtils;
+import de.cronn.reflection.util.TypedPropertyGetter;
+import net.AJAM.Mapper.Interfaces.OptionsBuilder;
+import net.AJAM.Mapper.Interfaces.PropertyGetter;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -9,13 +11,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Mapping <S, T>
+public class Mapping <S,T>
 {
     private final Class<S> source;
     private final Class<T> target;
 
-    private final List<Method> skippedProperties = new ArrayList<>();
     private final List<Translation<S,T, ?>> translations = new ArrayList<>();
+    private final List<Method> ignoredProperties = new ArrayList<>();
 
     private MappingType mappingType = null;
 
@@ -25,20 +27,28 @@ public class Mapping <S, T>
         this.target = target;
     }
 
-
-    public <V> Mapping<S,T> forMember(PropertyGetter<S,V> source, OptionsBuilder<MappingOption<T,V>> option)
+    public <V> Mapping<S,T> forMember(PropertyGetter<S,V> getter, OptionsBuilder<MappingOption<T,V>> option)
     {
         MappingOption<T,V> mappingOption = option.build(new MappingOption<>());
 
-        translations.add(new TranslationOneToOne<>(source, mappingOption));
+        translations.add(new OneToOneTranslation<>(getter, mappingOption));
         return this;
     }
 
-    public <V> Mapping<S,T> forMembers(PropertyGetter<S,V[]> source, OptionsBuilder<MappingOption<T,V>>... options)
+    public <V> Mapping<S,T> forMembers(PropertyGetter<S,V[]> getter, OptionsBuilder<MappingOption<T,V>>... options)
     {
         List<MappingOption<T,V>> mappingOptions = Arrays.stream(options).map(x -> x.build(new MappingOption<>())).collect(Collectors.toList());
 
-        translations.add(new TranslationOneToMany<S,T,V>(source, mappingOptions));
+        translations.add(new OneToManyTranslation<>(getter, mappingOptions));
+        return this;
+    }
+
+    public Mapping<S,T> ignore(PropertyGetter<S,?> getter) {
+        TypedPropertyGetter<S, ?> typedGetter = (TypedPropertyGetter<S, Object>) getter::get;
+
+        Method getterMethod = PropertyUtils.findMethodByGetter(source, typedGetter);
+        ignoredProperties.add(getterMethod);
+
         return this;
     }
 
@@ -47,8 +57,6 @@ public class Mapping <S, T>
         this.mappingType = mappingType;
         return this;
     }
-
-
 
     protected Class<S> getSource() {
         return source;
@@ -67,11 +75,13 @@ public class Mapping <S, T>
         return mappingType;
     }
 
-    protected List<Method> getSkippedProperties()
-    {
-        return skippedProperties;
+    public List<Method> getIgnoredProperties() {
+        return ignoredProperties;
     }
 
+    public void setMappingType(MappingType mappingType) {
+        this.mappingType = mappingType;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -82,10 +92,10 @@ public class Mapping <S, T>
 
         if (!source.equals(mapping.source)) return false;
         if (!target.equals(mapping.target)) return false;
-        if (!skippedProperties.equals(mapping.skippedProperties))
+        if (!ignoredProperties.equals(mapping.ignoredProperties))
             return false;
-        if (!translations.equals(mapping.translations))
-            return false;
+//        if (!translations.equals(mapping.translations))
+//            return false;
         return mappingType == mapping.mappingType;
     }
 }

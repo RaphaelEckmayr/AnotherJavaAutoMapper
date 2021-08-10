@@ -1,7 +1,4 @@
-package net.AJAM.mapper.interfaces;
-
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+package net.AJAM.Mapper.Interfaces;
 
 public interface PropertyGetter<T, V>
 {

@@ -1,13 +1,19 @@
-package net.AJAM.mapper;
+package net.AJAM.Mapper;
 
-import net.AJAM.mapper.interfaces.PropertySetter;
+import net.AJAM.Mapper.Interfaces.PropertySetter;
 
-import java.util.Arrays;
-
-public class MappingOption<T,V> {
+public class MappingOption<T,V>
+{
     private PropertySetter<T, V> setter;
     private boolean isIgnored;
 
+    public MappingOption(PropertySetter<T, V> setter, boolean isIgnored) {
+        this.setter = setter;
+        this.isIgnored = isIgnored;
+    }
+
+    public MappingOption() {
+    }
 
     public MappingOption<T, V> ignore() {
         isIgnored = true;
@@ -21,7 +27,7 @@ public class MappingOption<T,V> {
         return this;
     }
 
-    protected PropertySetter<T, ?> getSetter() {
+    protected PropertySetter<T,V> getSetter() {
         return setter;
     }
 
@@ -38,5 +44,12 @@ public class MappingOption<T,V> {
 
         if (isIgnored != that.isIgnored) return false;
         return setter != null ? setter.equals(that.setter) : that.setter == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = setter != null ? setter.hashCode() : 0;
+        result = 31 * result + (isIgnored ? 1 : 0);
+        return result;
     }
 }

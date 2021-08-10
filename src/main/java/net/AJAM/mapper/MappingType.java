@@ -1,6 +1,5 @@
-package net.AJAM.mapper;
+package net.AJAM.Mapper;
 
-public enum MappingType
-{
-    STRICT, LOOSE, MEDIUM
+public enum MappingType {
+    STRICT, MEDIUM, LOOSE
 }

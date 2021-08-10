@@ -1,4 +1,4 @@
-package net.AJAM.mapper;
+package net.AJAM.Mapper;
 
 import java.util.ArrayList;
 import java.util.Collections;

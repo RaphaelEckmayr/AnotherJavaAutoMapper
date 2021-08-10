@@ -1,6 +1,8 @@
-package net.AJAM.mapper;
+package net.AJAM.Mapper;
+
+import java.lang.reflect.Method;
 
 public abstract class Translation<S,T,V>
 {
-    protected abstract void translate(S source, T target);
+    protected abstract boolean translate(S source, T target, MappingType mappingType);
 }

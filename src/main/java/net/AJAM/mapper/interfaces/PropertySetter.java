@@ -1,4 +1,4 @@
-package net.AJAM.mapper.interfaces;
+package net.AJAM.Mapper.Interfaces;
 
 public interface PropertySetter<T, V>
 {

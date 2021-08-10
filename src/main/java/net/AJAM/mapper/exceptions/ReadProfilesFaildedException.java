@@ -1,4 +1,4 @@
-package net.AJAM.mapper.exceptions;
+package net.AJAM.Mapper.Exceptions;
 
 public class ReadProfilesFaildedException extends RuntimeException
 {
