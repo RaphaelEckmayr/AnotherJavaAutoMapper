@@ -49,7 +49,8 @@ new Mapping<>(PersonDto.class, PersonEntity.class)
 #### ManyToOne Mappings
 ```java
 new Mapping<>(PersonDto.class, PersonEntity.class)
-                .forMember(x -> x.getFirstName() + " " + x.getLastName(), opt->opt.mapTo(PersonEntity::setName));
+                .forMember(x -> x.getFirstName() + " " + x.getLastName(),
+                opt->opt.mapTo(PersonEntity::setName));
 ```
 
 #### OneToMany Mappings
@@ -61,7 +62,8 @@ new Mapping<>(PersonEntity.class, PersonDto.class)
 In this case you can also skip elements of the array
 ```java
 new Mapping<>(PersonEntity.class, PersonDto.class)
-                .forMembers(x -> x.getName.split(" "), opt->opt.mapTo(PersonDto::setFirstName), opt->opt.ignore());
+                .forMembers(x -> x.getName.split(" "),
+                opt->opt.mapTo(PersonDto::setFirstName), opt->opt.ignore());
 ```
 
 ### Profiles
