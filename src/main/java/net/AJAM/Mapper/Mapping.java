@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Mapping <S,T>
@@ -35,7 +36,8 @@ public class Mapping <S,T>
         return this;
     }
 
-    public <V> Mapping<S,T> forMembers(PropertyGetter<S,V[]> getter, OptionsBuilder<MappingOption<T,V>>... options)
+    @SafeVarargs
+    public final <V> Mapping<S,T> forMembers(PropertyGetter<S, V[]> getter, OptionsBuilder<MappingOption<T, V>>... options)
     {
         List<MappingOption<T,V>> mappingOptions = Arrays.stream(options).map(x -> x.build(new MappingOption<>())).collect(Collectors.toList());
 
@@ -90,12 +92,12 @@ public class Mapping <S,T>
 
         Mapping<?, ?> mapping = (Mapping<?, ?>) o;
 
-        if (!source.equals(mapping.source)) return false;
-        if (!target.equals(mapping.target)) return false;
-        if (!ignoredProperties.equals(mapping.ignoredProperties))
-            return false;
+        if (!Objects.equals(source, mapping.source)) return false;
+        if (!Objects.equals(target, mapping.target)) return false;
 //        if (!translations.equals(mapping.translations))
 //            return false;
+        if (!ignoredProperties.equals(mapping.ignoredProperties))
+            return false;
         return mappingType == mapping.mappingType;
     }
 }

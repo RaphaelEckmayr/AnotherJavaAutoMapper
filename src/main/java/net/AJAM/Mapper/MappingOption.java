@@ -45,11 +45,4 @@ public class MappingOption<T,V>
         if (isIgnored != that.isIgnored) return false;
         return setter != null ? setter.equals(that.setter) : that.setter == null;
     }
-
-    @Override
-    public int hashCode() {
-        int result = setter != null ? setter.hashCode() : 0;
-        result = 31 * result + (isIgnored ? 1 : 0);
-        return result;
-    }
 }

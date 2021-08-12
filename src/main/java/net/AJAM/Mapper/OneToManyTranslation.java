@@ -57,4 +57,15 @@ public class OneToManyTranslation<S,T,V> extends Translation<S,T,V>
 
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OneToManyTranslation<?, ?, ?> that = (OneToManyTranslation<?, ?, ?>) o;
+
+        if (options != null ? !options.equals(that.options) : that.options != null) return false;
+        return propertyGetter != null ? propertyGetter.equals(that.propertyGetter) : that.propertyGetter == null;
+    }
 }

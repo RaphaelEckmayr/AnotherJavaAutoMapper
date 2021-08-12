@@ -32,6 +32,8 @@ public abstract class Profile
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        return true;
+        Profile profile = (Profile) o;
+
+        return mappings.equals(profile.mappings);
     }
 }

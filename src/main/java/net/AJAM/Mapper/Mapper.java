@@ -11,17 +11,23 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class Mapper {
-    private final List<Mapping<?, ?>> mappings = new ArrayList<>();
-    private final MappingType DEFAULT_MAPPING_TYPE = MappingType.MEDIUM;
+    private static final int CACHE_SIZE = 200;
+    private static final MappingType DEFAULT_MAPPING_TYPE = MappingType.MEDIUM;
 
-    private final List<Profile> profiles = new ArrayList<>();
+    private final Map<Class<?>, List<PropertyDescriptor>> cache = Collections.synchronizedMap(new LinkedHashMap<Class<?>, List<PropertyDescriptor>>()
+    {
+        @Override
+        protected boolean removeEldestEntry(final Map.Entry eldest)
+        {
+            return size() > CACHE_SIZE;
+        }
+    });
+    private final List<Mapping<?, ?>> mappings = Collections.synchronizedList(new ArrayList<>());
+    private final List<Profile> profiles = Collections.synchronizedList(new ArrayList<>());
 
     public Mapper() {
         init();
@@ -67,36 +73,24 @@ public class Mapper {
         else if (mapping != null && mapping.getMappingType() != null)
             usedMappingType = mapping.getMappingType();
 
-        List<Translation<S, T, ?>> translations = new ArrayList<>();
-
         List<PropertyDescriptor> readProps;
         List<PropertyDescriptor> writeProps;
         try {
-            readProps = getProperties(source);
-            writeProps = getProperties(target);
+            readProps = handleProperties(source);
+            writeProps = handleProperties(target);
         } catch (IntrospectionException e) {
             return null;
         }
 
-        for (PropertyDescriptor read : readProps) {
-            if(ignoredProperties.contains(read.getReadMethod()))
-                continue;
-
-            for (PropertyDescriptor write : writeProps)
-            {
-                if(read.getName().equals(write.getName()))
-                    translations.add(new BaseTranslation<>(read.getReadMethod(), write.getWriteMethod()));
-            }
-        }
+        List<Translation<S, T, ?>> translations = createBaseTranslations(readProps, writeProps, ignoredProperties);
 
         if(mapping != null) {
             translations.addAll(mapping.getTranslations());
         }
 
-        for (var trans : translations) {
+        for (Translation<S,T,?> trans : translations) {
             trans.translate(source, target, usedMappingType);
         }
-
 
         return target;
     }
@@ -267,17 +261,60 @@ public class Mapper {
         return props;
     }
 
+    private <T> List<PropertyDescriptor> handleProperties(T obj) throws IntrospectionException
+    {
+        List<PropertyDescriptor> res = cache.get(obj.getClass());
+        if (res == null)
+        {
+            res = getProperties(obj);
+
+            cache.put(obj.getClass(), res);
+        }
+
+        return res;
+    }
 
     private <S, T> Mapping<S, T> searchForMapping(S source, T target) {
+        List<Mapping<S,T>> correctMappings = new ArrayList<>();
+
         for (Mapping mapping : mappings) {
             if (mapping.getSource() == source.getClass() && mapping.getTarget() == target.getClass()) {
-                return mapping;
+                correctMappings.add(mapping);
             }
         }
 
-        return null;
+        Mapping<S,T> result = new Mapping(source.getClass(), target.getClass());
+        for(Mapping<S,T> mapping : correctMappings)
+        {
+            result.getTranslations().addAll(mapping.getTranslations());
+            result.getIgnoredProperties().addAll(mapping.getIgnoredProperties());
+
+            if(result.getMappingType() == null || result.getMappingType().getValue() < mapping.getMappingType().getValue())
+            {
+                result.mappingType(mapping.getMappingType());
+            }
+        }
+
+        return result;
     }
 
+    private <S,T> List<Translation<S,T,?>> createBaseTranslations(List<PropertyDescriptor> readProps, List<PropertyDescriptor> writeProps, List<Method> ignoredProperties)
+    {
+        List<Translation<S, T, ?>> translations = new ArrayList<>();
+
+        for (PropertyDescriptor read : readProps) {
+            if(ignoredProperties.contains(read.getReadMethod()))
+                continue;
+
+            for (PropertyDescriptor write : writeProps)
+            {
+                if(read.getName().equals(write.getName()))
+                    translations.add(new BaseTranslation<>(read.getReadMethod(), write.getWriteMethod()));
+            }
+        }
+
+        return translations;
+    }
 
     private void init() {
         Reflections reflections = new Reflections(new ConfigurationBuilder()

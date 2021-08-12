@@ -1,9 +1,9 @@
-package net.AJAM.mapper.test.Profiles;
+package net.AJAM.Mapper.test.Profiles;
 
-import net.AJAM.mapper.Profile;
-import net.AJAM.mapper.Mapping;
-import net.AJAM.mapper.test.Utils.Person1;
-import net.AJAM.mapper.test.Utils.Person2;
+import net.AJAM.Mapper.Profile;
+import net.AJAM.Mapper.Mapping;
+import net.AJAM.Mapper.test.Utils.Person1;
+import net.AJAM.Mapper.test.Utils.Person2;
 
 public class IgnoreAllProfile extends Profile
 {

@@ -52,4 +52,15 @@ class BaseTranslation<S,T,V> extends Translation<S,T,V>
 
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BaseTranslation<?, ?, ?> that = (BaseTranslation<?, ?, ?>) o;
+
+        if (getter != null ? !getter.equals(that.getter) : that.getter != null) return false;
+        return setter != null ? setter.equals(that.setter) : that.setter == null;
+    }
 }

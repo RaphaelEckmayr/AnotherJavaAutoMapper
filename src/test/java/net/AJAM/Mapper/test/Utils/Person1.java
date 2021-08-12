@@ -1,4 +1,4 @@
-package net.AJAM.mapper.test.Utils;
+package net.AJAM.Mapper.test.Utils;
 
 import java.time.LocalDate;
 

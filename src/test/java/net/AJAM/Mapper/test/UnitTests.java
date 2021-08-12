@@ -1,23 +1,41 @@
-package net.AJAM.mapper.test;
+package net.AJAM.Mapper.test;
 
-import net.AJAM.mapper.*;
-import net.AJAM.mapper.test.Profiles.IgnoreAllProfile;
-import net.AJAM.mapper.test.Profiles.TestProfile;
-import net.AJAM.mapper.test.Profiles.TestProfile1;
-import net.AJAM.mapper.test.Utils.Person1;
-import net.AJAM.mapper.test.Utils.Person2;
-import net.AJAM.mapper.test.Utils.Person3;
+import de.cronn.reflection.util.PropertyUtils;
+import net.AJAM.Mapper.*;
+import net.AJAM.Mapper.Interfaces.PropertySetter;
+import net.AJAM.Mapper.test.Profiles.IgnoreAllProfile;
+import net.AJAM.Mapper.test.Profiles.TestProfile;
+import net.AJAM.Mapper.test.Profiles.TestProfile1;
+import net.AJAM.Mapper.test.Utils.Person1;
+import net.AJAM.Mapper.test.Utils.Person2;
+import net.AJAM.Mapper.test.Utils.Person3;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.beans.PropertyDescriptor;
+import java.lang.ref.Reference;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class UnitTests
 {
+    @Test
+    @DisplayName("bullshit")
+    public void test() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+
+
+
+
+        System.out.println();
+    }
+
     @Test
     @DisplayName("Usual way vs Mapper")
     public void testBasics()
@@ -402,6 +420,50 @@ public class UnitTests
     }
 
     @Test
+    @DisplayName("Test ignore and remapping")
+    public void testIgnoreAndRemap() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", null, "john doe",
+                LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
+
+        Mapper mapper = new Mapper(false);
+
+        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+                .ignore(Person1::getName)
+                .forMember(Person1::getName, opt->opt.mapTo(Person2::seteMail))
+                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2))
+                .mappingType(MappingType.LOOSE);
+
+        mapper.addMapping(mapping);
+
+        Person2 actual = mapper.map(Person2.class, person);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test ignore and remapping reverse order")
+    public void testIgnoreAndRemapReverseOrder() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", null, "john doe",
+                LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
+
+        Mapper mapper = new Mapper(false);
+
+        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+                .forMember(Person1::getName, opt->opt.mapTo(Person2::seteMail))
+                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2))
+                .ignore(Person1::getName)
+                .mappingType(MappingType.LOOSE);
+
+        mapper.addMapping(mapping);
+
+        Person2 actual = mapper.map(Person2.class, person);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
     @DisplayName("Test add mapping on Mapper")
     public void testAddMapping()
     {
@@ -419,6 +481,27 @@ public class UnitTests
         Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test merging mappings")
+    public void mergeMapping() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12,10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", null,
+                LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
+
+        Mapper mapper = new Mapper(false);
+
+        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2)).mappingType(MappingType.STRICT);
+
+        Mapping mapping1 = new Mapping<>(Person1.class, Person2.class).ignore(Person1::geteMail).mappingType(MappingType.LOOSE);
+
+        mapper.addMappings(mapping, mapping1);
+
+        Person2 actual = mapper.map(Person2.class, person);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -445,10 +528,10 @@ public class UnitTests
     {
         Mapper mapper = new Mapper(false);
 
-        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+        Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
 
-        Mapping mapping2 = new Mapping<>(Person1.class, Person2.class)
+        Mapping<Person1, Person2> mapping2 = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::geteMail, MappingOption::ignore);
 
         List<Mapping<?,?>> mappings = new ArrayList<>();
@@ -512,9 +595,10 @@ public class UnitTests
     public void testAddRemoveProfile()
     {
         Mapper mapper = new Mapper(false);
-        mapper.addProfile(new IgnoreAllProfile());
 
         Profile prof1 = new IgnoreAllProfile();
+        mapper.addProfile(prof1);
+
         Mapping mapping = prof1.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));

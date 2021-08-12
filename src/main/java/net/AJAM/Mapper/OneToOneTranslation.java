@@ -41,4 +41,16 @@ public class OneToOneTranslation<S,T,V> extends Translation<S,T,V>{
 
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OneToOneTranslation<?, ?, ?> that = (OneToOneTranslation<?, ?, ?>) o;
+
+        if (propertyGetter != null ? !propertyGetter.equals(that.propertyGetter) : that.propertyGetter != null)
+            return false;
+        return option != null ? option.equals(that.option) : that.option == null;
+    }
 }
