@@ -1,8 +1,6 @@
 package net.AJAM.Mapper.test;
 
-import de.cronn.reflection.util.PropertyUtils;
 import net.AJAM.Mapper.*;
-import net.AJAM.Mapper.Interfaces.PropertySetter;
 import net.AJAM.Mapper.test.Profiles.IgnoreAllProfile;
 import net.AJAM.Mapper.test.Profiles.TestProfile;
 import net.AJAM.Mapper.test.Profiles.TestProfile1;
@@ -13,29 +11,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.beans.PropertyDescriptor;
-import java.lang.ref.Reference;
-import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class UnitTests
 {
-    @Test
-    @DisplayName("bullshit")
-    public void test() {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
-
-
-
-
-        System.out.println();
-    }
-
     @Test
     @DisplayName("Usual way vs Mapper")
     public void testBasics()
@@ -429,7 +411,7 @@ public class UnitTests
 
         Mapper mapper = new Mapper(false);
 
-        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+        Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .ignore(Person1::getName)
                 .forMember(Person1::getName, opt->opt.mapTo(Person2::seteMail))
                 .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2))
@@ -451,7 +433,7 @@ public class UnitTests
 
         Mapper mapper = new Mapper(false);
 
-        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+        Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getName, opt->opt.mapTo(Person2::seteMail))
                 .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2))
                 .ignore(Person1::getName)
@@ -474,7 +456,7 @@ public class UnitTests
 
         Mapper mapper = new Mapper(false);
 
-        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+        Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
         mapper.addMapping(mapping);
 
@@ -494,10 +476,10 @@ public class UnitTests
 
         Mapper mapper = new Mapper(false);
 
-        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+        Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2)).mappingType(MappingType.STRICT);
 
-        Mapping mapping1 = new Mapping<>(Person1.class, Person2.class).ignore(Person1::geteMail).mappingType(MappingType.LOOSE);
+        Mapping<Person1, Person2> mapping1 = new Mapping<>(Person1.class, Person2.class).ignore(Person1::geteMail).mappingType(MappingType.LOOSE);
 
         mapper.addMappings(mapping, mapping1);
 
@@ -511,7 +493,7 @@ public class UnitTests
     {
         Mapper mapper = new Mapper(false);
 
-        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+        Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
         mapper.addMapping(mapping);
 
@@ -555,10 +537,10 @@ public class UnitTests
     {
         Mapper mapper = new Mapper(false);
 
-        Mapping mapping = new Mapping<>(Person1.class, Person2.class)
+        Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
 
-        Mapping mapping2 = new Mapping<>(Person1.class, Person2.class)
+        Mapping<Person1, Person2> mapping2 = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::geteMail, MappingOption::ignore);
 
         mapper.addMappings(mapping, mapping2);
@@ -579,7 +561,7 @@ public class UnitTests
         Mapper mapper = new Mapper(true);
 
         Profile prof1 = new IgnoreAllProfile();
-        Mapping mapping = prof1.getMappings().get(0);
+        Mapping<?,?> mapping = prof1.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertTrue(mapper.getProfiles().contains(new IgnoreAllProfile()));
@@ -599,7 +581,7 @@ public class UnitTests
         Profile prof1 = new IgnoreAllProfile();
         mapper.addProfile(prof1);
 
-        Mapping mapping = prof1.getMappings().get(0);
+        Mapping<?,?> mapping = prof1.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertTrue(mapper.getProfiles().contains(new IgnoreAllProfile()));
@@ -618,10 +600,10 @@ public class UnitTests
         mapper.addProfiles(new IgnoreAllProfile(), new TestProfile());
 
         Profile prof1 = new IgnoreAllProfile();
-        Mapping mapping = prof1.getMappings().get(0);
+        Mapping<?,?> mapping = prof1.getMappings().get(0);
 
         Profile prof2 = new TestProfile();
-        Mapping mapping2 = prof2.getMappings().get(0);
+        Mapping<?,?> mapping2 = prof2.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertTrue(mapper.getMappings().contains(mapping2));
@@ -649,10 +631,10 @@ public class UnitTests
         mapper.addProfiles(profiles);
 
         Profile prof1 = new IgnoreAllProfile();
-        Mapping mapping = prof1.getMappings().get(0);
+        Mapping<?,?> mapping = prof1.getMappings().get(0);
 
         Profile prof2 = new TestProfile();
-        Mapping mapping2 = prof2.getMappings().get(0);
+        Mapping<?,?> mapping2 = prof2.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertTrue(mapper.getMappings().contains(mapping2));
