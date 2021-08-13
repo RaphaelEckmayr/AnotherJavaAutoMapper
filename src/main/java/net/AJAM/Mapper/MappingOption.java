@@ -2,8 +2,7 @@ package net.AJAM.Mapper;
 
 import net.AJAM.Mapper.Interfaces.PropertySetter;
 
-public class MappingOption<T,V>
-{
+public class MappingOption<T, V> {
     private PropertySetter<T, V> setter;
     private boolean isIgnored;
 
@@ -27,7 +26,7 @@ public class MappingOption<T,V>
         return this;
     }
 
-    protected PropertySetter<T,V> getSetter() {
+    protected PropertySetter<T, V> getSetter() {
         return setter;
     }
 

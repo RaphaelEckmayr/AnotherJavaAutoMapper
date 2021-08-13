@@ -16,14 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class UnitTests
-{
+public class UnitTests {
     @Test
     @DisplayName("Usual way vs Mapper")
-    public void testBasics()
-    {
+    public void testBasics() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
 
         Person2 person2 = new Person2();
         person2.setName(person.getName());
@@ -42,10 +40,9 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map method 1")
-    public void testMap1()
-    {
+    public void testMap1() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
 
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
@@ -57,10 +54,9 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map method 2")
-    public void testMap2()
-    {
+    public void testMap2() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
@@ -72,12 +68,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map method 3")
-    public void testMap3()
-    {
+    public void testMap3() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12,12), "2020-12-10", null);
+                LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
 
@@ -88,12 +83,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map method 4")
-    public void testMap4()
-    {
+    public void testMap4() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12,12), "2020-12-10", null);
+                LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
 
@@ -104,10 +98,9 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map async method 1")
-    public void testMap1Async()
-    {
+    public void testMap1Async() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
@@ -119,10 +112,9 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map async method 2")
-    public void testMap2Async()
-    {
+    public void testMap2Async() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
@@ -134,12 +126,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map async method 3")
-    public void testMap3Async()
-    {
+    public void testMap3Async() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12,12), "2020-12-10", null);
+                LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
 
@@ -150,12 +141,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map async method 4")
-    public void testMapAsync4()
-    {
+    public void testMapAsync4() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12,12), "2020-12-10", null);
+                LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
 
@@ -166,17 +156,16 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map list method 1")
-    public void testMapList1()
-    {
+    public void testMapList1() {
         List<Person1> personList = new ArrayList<>();
         personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512"));
-        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10", LocalDate.of(2018, 10,1), ""));
+                LocalDate.of(2020, 12, 10), "+43 452 234234512"));
+        personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10", LocalDate.of(2018, 10, 1), ""));
 
         List<Person2> expected = new ArrayList<>();
         expected.add(new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12,12), "2020-12-10", null));
-        expected.add(new Person2("1", "jon do", "idk@what", LocalDate.of(2001, 12,10),
+                LocalDate.of(2004, 12, 12), "2020-12-10", null));
+        expected.add(new Person2("1", "jon do", "idk@what", LocalDate.of(2001, 12, 10),
                 "2018-10-01", null));
 
         Mapper mapper = new Mapper(false);
@@ -188,13 +177,12 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map list method 2")
-    public void testMapList2()
-    {
+    public void testMapList2() {
         List<Person1> personList = new ArrayList<>();
         personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512"));
+                LocalDate.of(2020, 12, 10), "+43 452 234234512"));
         personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10",
-                LocalDate.of(2018, 10,1), ""));
+                LocalDate.of(2018, 10, 1), ""));
 
         List<Person2> expected = new ArrayList<>();
         expected.add(new Person2("12", "john doe", "john.doe@foo.bar", null, null, null));
@@ -209,19 +197,18 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map list async method 1")
-    public void testMapListAsync1()
-    {
+    public void testMapListAsync1() {
         List<Person1> personList = new ArrayList<>();
         personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512"));
+                LocalDate.of(2020, 12, 10), "+43 452 234234512"));
         personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10",
-                LocalDate.of(2018, 10,1), ""));
+                LocalDate.of(2018, 10, 1), ""));
 
         List<Person2> expected = new ArrayList<>();
         expected.add(new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12,12), "2020-12-10", null));
+                LocalDate.of(2004, 12, 12), "2020-12-10", null));
         expected.add(new Person2("1", "jon do", "idk@what",
-                LocalDate.of(2001, 12,10), "2018-10-01", null));
+                LocalDate.of(2001, 12, 10), "2018-10-01", null));
 
         Mapper mapper = new Mapper(false);
 
@@ -232,13 +219,12 @@ public class UnitTests
 
     @Test
     @DisplayName("Test map list async method 2")
-    public void testMapListAsync2()
-    {
+    public void testMapListAsync2() {
         List<Person1> personList = new ArrayList<>();
         personList.add(new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512"));
+                LocalDate.of(2020, 12, 10), "+43 452 234234512"));
         personList.add(new Person1(1, "jon do", "idk@what", "2001-12-10",
-                LocalDate.of(2018, 10,1), ""));
+                LocalDate.of(2018, 10, 1), ""));
 
         List<Person2> expected = new ArrayList<>();
         expected.add(new Person2("12", "john doe", "john.doe@foo.bar", null, null, null));
@@ -253,10 +239,9 @@ public class UnitTests
 
     @Test
     @DisplayName("Test strict mapping type as parameter")
-    public void testMapStrictParameter()
-    {
+    public void testMapStrictParameter() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
@@ -267,10 +252,9 @@ public class UnitTests
 
     @Test
     @DisplayName("Test medium mapping type as parameter")
-    public void testMapMediumParameter()
-    {
+    public void testMapMediumParameter() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
@@ -281,12 +265,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test loose mapping type as parameter")
-    public void testMapLooseParameter()
-    {
+    public void testMapLooseParameter() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12,12), "2020-12-10", null);
+                LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
         Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
@@ -296,10 +279,9 @@ public class UnitTests
 
     @Test
     @DisplayName("Test none mapping type as parameter")
-    public void testMapNoneParameter()
-    {
+    public void testMapNoneParameter() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
@@ -310,10 +292,9 @@ public class UnitTests
 
     @Test
     @DisplayName("Test strict mapping type as mapping")
-    public void testMapStrictMapping()
-    {
+    public void testMapStrictMapping() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
@@ -325,10 +306,9 @@ public class UnitTests
 
     @Test
     @DisplayName("Test medium mapping type as mapping")
-    public void testMapMediumMapping()
-    {
+    public void testMapMediumMapping() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         Mapper mapper = new Mapper(false);
@@ -340,12 +320,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test loose mapping type as mapping")
-    public void testMapLooseMapping()
-    {
+    public void testMapLooseMapping() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12,12), "2020-12-10", null);
+                LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
         mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.LOOSE));
@@ -356,11 +335,10 @@ public class UnitTests
 
     @Test
     @DisplayName("Test ignore in profile")
-    public void testIgnore()
-    {
+    public void testIgnore() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12,12), "2020-12-10", null);
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
         mapper.addProfile(TestProfile.class);
@@ -371,12 +349,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test mapTo in profile")
-    public void testMapTo()
-    {
+    public void testMapTo() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
+                LocalDate.of(2004, 12, 12), "2020-12-10", "+43 452 234234512");
 
         Mapper mapper = new Mapper(false);
         mapper.addProfile(TestProfile1.class);
@@ -387,10 +364,9 @@ public class UnitTests
 
     @Test
     @DisplayName("Test MappingType hierarchy")
-    public void testMappingTypeHierarchy()
-    {
+    public void testMappingTypeHierarchy() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         //hierarchy = Parameter, Mapping
@@ -405,16 +381,16 @@ public class UnitTests
     @DisplayName("Test ignore and remapping")
     public void testIgnoreAndRemap() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", null, "john doe",
-                LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
+                LocalDate.of(2004, 12, 12), "2020-12-10", "+43 452 234234512");
 
         Mapper mapper = new Mapper(false);
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .ignore(Person1::getName)
-                .forMember(Person1::getName, opt->opt.mapTo(Person2::seteMail))
-                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2))
+                .forMember(Person1::getName, opt -> opt.mapTo(Person2::seteMail))
+                .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2))
                 .mappingType(MappingType.LOOSE);
 
         mapper.addMapping(mapping);
@@ -427,15 +403,15 @@ public class UnitTests
     @DisplayName("Test ignore and remapping reverse order")
     public void testIgnoreAndRemapReverseOrder() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", null, "john doe",
-                LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
+                LocalDate.of(2004, 12, 12), "2020-12-10", "+43 452 234234512");
 
         Mapper mapper = new Mapper(false);
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
-                .forMember(Person1::getName, opt->opt.mapTo(Person2::seteMail))
-                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2))
+                .forMember(Person1::getName, opt -> opt.mapTo(Person2::seteMail))
+                .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2))
                 .ignore(Person1::getName)
                 .mappingType(MappingType.LOOSE);
 
@@ -447,17 +423,16 @@ public class UnitTests
 
     @Test
     @DisplayName("Test add mapping on Mapper")
-    public void testAddMapping()
-    {
+    public void testAddMapping() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
+                LocalDate.of(2004, 12, 12), "2020-12-10", "+43 452 234234512");
 
         Mapper mapper = new Mapper(false);
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
-                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
+                .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2));
         mapper.addMapping(mapping);
 
         Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
@@ -470,14 +445,14 @@ public class UnitTests
     @DisplayName("Test merging mappings")
     public void mergeMapping() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", null,
-                LocalDate.of(2004, 12,12), "2020-12-10", "+43 452 234234512");
+                LocalDate.of(2004, 12, 12), "2020-12-10", "+43 452 234234512");
 
         Mapper mapper = new Mapper(false);
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
-                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2)).mappingType(MappingType.STRICT);
+                .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2)).mappingType(MappingType.STRICT);
 
         Mapping<Person1, Person2> mapping1 = new Mapping<>(Person1.class, Person2.class).ignore(Person1::geteMail).mappingType(MappingType.LOOSE);
 
@@ -489,12 +464,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test add and remove mapping on Mapper")
-    public void testAddRemoveMapping()
-    {
+    public void testAddRemoveMapping() {
         Mapper mapper = new Mapper(false);
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
-                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
+                .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2));
         mapper.addMapping(mapping);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
@@ -506,17 +480,16 @@ public class UnitTests
 
     @Test
     @DisplayName("Test add and remove mappings on Mapper 1")
-    public void testAddRemoveMappings1()
-    {
+    public void testAddRemoveMappings1() {
         Mapper mapper = new Mapper(false);
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
-                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
+                .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2));
 
         Mapping<Person1, Person2> mapping2 = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::geteMail, MappingOption::ignore);
 
-        List<Mapping<?,?>> mappings = new ArrayList<>();
+        List<Mapping<?, ?>> mappings = new ArrayList<>();
         mappings.add(mapping);
         mappings.add(mapping2);
 
@@ -533,12 +506,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test add and remove mappings on Mapper 2")
-    public void testAddRemoveMappings2()
-    {
+    public void testAddRemoveMappings2() {
         Mapper mapper = new Mapper(false);
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
-                .forMember(Person1::getPhone, opt->opt.mapTo(Person2::setPhone2));
+                .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2));
 
         Mapping<Person1, Person2> mapping2 = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::geteMail, MappingOption::ignore);
@@ -556,12 +528,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test remove Profile")
-    public void testRemoveProfile()
-    {
+    public void testRemoveProfile() {
         Mapper mapper = new Mapper(true);
 
         Profile prof1 = new IgnoreAllProfile();
-        Mapping<?,?> mapping = prof1.getMappings().get(0);
+        Mapping<?, ?> mapping = prof1.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertTrue(mapper.getProfiles().contains(new IgnoreAllProfile()));
@@ -574,14 +545,13 @@ public class UnitTests
 
     @Test
     @DisplayName("Test add and removeProfile")
-    public void testAddRemoveProfile()
-    {
+    public void testAddRemoveProfile() {
         Mapper mapper = new Mapper(false);
 
         Profile prof1 = new IgnoreAllProfile();
         mapper.addProfile(prof1);
 
-        Mapping<?,?> mapping = prof1.getMappings().get(0);
+        Mapping<?, ?> mapping = prof1.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertTrue(mapper.getProfiles().contains(new IgnoreAllProfile()));
@@ -594,16 +564,15 @@ public class UnitTests
 
     @Test
     @DisplayName("Test add and remove Profiles 1")
-    public void testAddRemoveProfiles1()
-    {
+    public void testAddRemoveProfiles1() {
         Mapper mapper = new Mapper(false);
         mapper.addProfiles(new IgnoreAllProfile(), new TestProfile());
 
         Profile prof1 = new IgnoreAllProfile();
-        Mapping<?,?> mapping = prof1.getMappings().get(0);
+        Mapping<?, ?> mapping = prof1.getMappings().get(0);
 
         Profile prof2 = new TestProfile();
-        Mapping<?,?> mapping2 = prof2.getMappings().get(0);
+        Mapping<?, ?> mapping2 = prof2.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertTrue(mapper.getMappings().contains(mapping2));
@@ -620,8 +589,7 @@ public class UnitTests
 
     @Test
     @DisplayName("Test add and remove Profiles 2")
-    public void testAddRemoveProfiles2()
-    {
+    public void testAddRemoveProfiles2() {
         Mapper mapper = new Mapper(false);
 
         List<Profile> profiles = new ArrayList<>();
@@ -631,10 +599,10 @@ public class UnitTests
         mapper.addProfiles(profiles);
 
         Profile prof1 = new IgnoreAllProfile();
-        Mapping<?,?> mapping = prof1.getMappings().get(0);
+        Mapping<?, ?> mapping = prof1.getMappings().get(0);
 
         Profile prof2 = new TestProfile();
-        Mapping<?,?> mapping2 = prof2.getMappings().get(0);
+        Mapping<?, ?> mapping2 = prof2.getMappings().get(0);
 
         Assertions.assertTrue(mapper.getMappings().contains(mapping));
         Assertions.assertTrue(mapper.getMappings().contains(mapping2));
@@ -651,12 +619,11 @@ public class UnitTests
 
     @Test
     @DisplayName("Test one to many")
-    public void testOneToMany()
-    {
+    public void testOneToMany() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person3 expected = new Person3(12, "john", "doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12,10), "+43 452 234234512");
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
 
         Mapper mapper = new Mapper(false);
         mapper.addMapping(new Mapping<>(Person1.class, Person3.class).forMembers(x -> x.getName().split(" "), opt -> opt.mapTo(Person3::setFirstname), x -> x.mapTo(Person3::setLastname)));

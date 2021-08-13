@@ -7,17 +7,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
-public class ConversionManager
-{
-    private static final List<Conversion<?,?>> conversions = new ArrayList<>();
+public class ConversionManager {
+    private static final List<Conversion<?, ?>> conversions = new ArrayList<>();
 
-    public static Function<?,?> getConversionFunction(Class<?> from, Class<?> to, MappingType mappingType)
-    {
-        for (Conversion<?, ?> conv : conversions)
-        {
+    public static Function<?, ?> getConversionFunction(Class<?> from, Class<?> to, MappingType mappingType) {
+        for (Conversion<?, ?> conv : conversions) {
             if (from == conv.getFrom() && to == conv.getTo() &&
-                    (mappingType == conv.getMappingType() || mappingType == MappingType.LOOSE))
-            {
+                    (mappingType == conv.getMappingType() || mappingType == MappingType.LOOSE)) {
                 return conv.getConversionFunction();
             }
         }
@@ -25,13 +21,11 @@ public class ConversionManager
         return null;
     }
 
-    public List<Conversion<?,?>> getConversions()
-    {
+    public List<Conversion<?, ?>> getConversions() {
         return conversions;
     }
 
-    protected static void initLooseConversions()
-    {
+    protected static void initLooseConversions() {
         conversions.add(new Conversion<>(String.class, Integer.class, MappingType.MEDIUM, Integer::parseInt));
         conversions.add(new Conversion<>(String.class, Double.class, MappingType.MEDIUM, Double::parseDouble));
         conversions.add(new Conversion<>(String.class, Long.class, MappingType.MEDIUM, Long::parseLong));

@@ -12,12 +12,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Mapping <S,T>
-{
+public class Mapping<S, T> {
     private final Class<S> source;
     private final Class<T> target;
 
-    private final List<Translation<S,T, ?>> translations = new ArrayList<>();
+    private final List<Translation<S, T, ?>> translations = new ArrayList<>();
     private final List<Method> ignoredProperties = new ArrayList<>();
 
     private MappingType mappingType = null;
@@ -28,24 +27,22 @@ public class Mapping <S,T>
         this.target = target;
     }
 
-    public <V> Mapping<S,T> forMember(PropertyGetter<S,V> getter, OptionsBuilder<MappingOption<T,V>> option)
-    {
-        MappingOption<T,V> mappingOption = option.build(new MappingOption<>());
+    public <V> Mapping<S, T> forMember(PropertyGetter<S, V> getter, OptionsBuilder<MappingOption<T, V>> option) {
+        MappingOption<T, V> mappingOption = option.build(new MappingOption<>());
 
         translations.add(new OneToOneTranslation<>(getter, mappingOption));
         return this;
     }
 
     @SafeVarargs
-    public final <V> Mapping<S,T> forMembers(PropertyGetter<S, V[]> getter, OptionsBuilder<MappingOption<T, V>>... options)
-    {
-        List<MappingOption<T,V>> mappingOptions = Arrays.stream(options).map(x -> x.build(new MappingOption<>())).collect(Collectors.toList());
+    public final <V> Mapping<S, T> forMembers(PropertyGetter<S, V[]> getter, OptionsBuilder<MappingOption<T, V>>... options) {
+        List<MappingOption<T, V>> mappingOptions = Arrays.stream(options).map(x -> x.build(new MappingOption<>())).collect(Collectors.toList());
 
         translations.add(new OneToManyTranslation<>(getter, mappingOptions));
         return this;
     }
 
-    public Mapping<S,T> ignore(PropertyGetter<S,?> getter) {
+    public Mapping<S, T> ignore(PropertyGetter<S, ?> getter) {
         TypedPropertyGetter<S, ?> typedGetter = (TypedPropertyGetter<S, Object>) getter::get;
 
         Method getterMethod = PropertyUtils.findMethodByGetter(source, typedGetter);
@@ -54,8 +51,7 @@ public class Mapping <S,T>
         return this;
     }
 
-    public Mapping<S,T> mappingType(MappingType mappingType)
-    {
+    public Mapping<S, T> mappingType(MappingType mappingType) {
         this.mappingType = mappingType;
         return this;
     }
@@ -68,12 +64,11 @@ public class Mapping <S,T>
         return target;
     }
 
-    protected List<Translation<S,T, ?>> getTranslations() {
+    protected List<Translation<S, T, ?>> getTranslations() {
         return translations;
     }
 
-    protected MappingType getMappingType()
-    {
+    protected MappingType getMappingType() {
         return mappingType;
     }
 

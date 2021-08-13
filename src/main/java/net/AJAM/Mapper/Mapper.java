@@ -15,29 +15,16 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class Mapper {
-    private static final int CACHE_SIZE = 200;
-    private static final MappingType DEFAULT_MAPPING_TYPE = MappingType.MEDIUM;
-
-    private final Map<Class<?>, List<PropertyDescriptor>> cache = Collections.synchronizedMap(new LinkedHashMap<Class<?>, List<PropertyDescriptor>>()
-    {
-        @Override
-        protected boolean removeEldestEntry(final Map.Entry eldest)
-        {
-            return size() > CACHE_SIZE;
-        }
-    });
     private final List<Mapping<?, ?>> mappings = Collections.synchronizedList(new ArrayList<>());
     private final List<Profile> profiles = Collections.synchronizedList(new ArrayList<>());
+    private MapperEngine mapperEngine = MapperEngine.getInstance();
 
     public Mapper() {
-        init();
+        init(true);
     }
 
     public Mapper(boolean readProfiles) {
-        if (readProfiles)
-            init();
-        else
-            ConversionManager.initLooseConversions();
+        init(readProfiles);
     }
 
     public <T, S> T map(Class<T> targetType, S source) {
@@ -60,39 +47,7 @@ public class Mapper {
     }
 
     public <S, T> T map(T target, S source, MappingType mappingType) {
-        Mapping<S, T> mapping = searchForMapping(source, target);
-
-        MappingType usedMappingType = DEFAULT_MAPPING_TYPE;
-        List<Method> ignoredProperties = new ArrayList<>();
-
-        if(mapping != null)
-            ignoredProperties = mapping.getIgnoredProperties();
-
-        if(mappingType != null)
-            usedMappingType = mappingType;
-        else if (mapping != null && mapping.getMappingType() != null)
-            usedMappingType = mapping.getMappingType();
-
-        List<PropertyDescriptor> readProps;
-        List<PropertyDescriptor> writeProps;
-        try {
-            readProps = handleProperties(source);
-            writeProps = handleProperties(target);
-        } catch (IntrospectionException e) {
-            return null;
-        }
-
-        List<Translation<S, T, ?>> translations = createBaseTranslations(readProps, writeProps, ignoredProperties);
-
-        if(mapping != null) {
-            translations.addAll(mapping.getTranslations());
-        }
-
-        for (Translation<S,T,?> trans : translations) {
-            trans.translate(source, target, usedMappingType);
-        }
-
-        return target;
+        return mapperEngine.internalMap(target, source, mappingType, mappings);
     }
 
     public <T, S> CompletableFuture<T> mapAsync(T target, S source, MappingType mappingType) {
@@ -135,49 +90,39 @@ public class Mapper {
         return CompletableFuture.supplyAsync(() -> mapList(targetType, source, mappingType));
     }
 
-    public Profile addProfile(Class<? extends Profile> profileClass)
-    {
-        try
-        {
+    public Profile addProfile(Class<? extends Profile> profileClass) {
+        try {
             Profile profile = profileClass.getDeclaredConstructor().newInstance();
             addProfile(profile);
 
             return profile;
-        }
-        catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
-        {
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new ReadProfilesFaildedException("Error while creating Profile " + profileClass.getName() + ". Maybe you forgot the parameterless constructor");
         }
     }
 
-    public void addProfile(Profile profile)
-    {
+    public void addProfile(Profile profile) {
         profiles.add(profile);
         mappings.addAll(profile.getMappings());
     }
 
-    public void addProfiles(List<Profile> profiles)
-    {
-        for(Profile profile : profiles) {
+    public void addProfiles(List<Profile> profiles) {
+        for (Profile profile : profiles) {
             addProfile(profile);
         }
     }
 
-    public void addProfiles(Profile... profiles)
-    {
-        for(Profile profile : profiles) {
+    public void addProfiles(Profile... profiles) {
+        for (Profile profile : profiles) {
             addProfile(profile);
         }
     }
 
     public boolean removeProfile(Class<? extends Profile> profileClass) {
-        try
-        {
+        try {
             Profile profile = profileClass.getDeclaredConstructor().newInstance();
             return removeProfile(profile);
-        }
-        catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
-        {
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             return false;
         }
     }
@@ -191,7 +136,7 @@ public class Mapper {
         boolean result = true;
 
         for (Profile profile : profiles) {
-            if(!removeProfile(profile))
+            if (!removeProfile(profile))
                 result = false;
         }
 
@@ -202,143 +147,70 @@ public class Mapper {
         boolean result = true;
 
         for (Profile profile : profiles) {
-            if(!removeProfile(profile))
+            if (!removeProfile(profile))
                 result = false;
         }
 
         return result;
     }
 
-    public void addMapping(Mapping<?,?> mapping)
-    {
+    public void addMapping(Mapping<?, ?> mapping) {
         mappings.add(mapping);
     }
 
-    public boolean removeMapping(Mapping<?,?> mapping)
-    {
+    public boolean removeMapping(Mapping<?, ?> mapping) {
         return mappings.remove(mapping);
     }
 
-    public void addMappings(List<Mapping<?,?>> mappingList)
-    {
+    public void addMappings(List<Mapping<?, ?>> mappingList) {
         mappings.addAll(mappingList);
     }
 
-    public void addMappings(Mapping<?,?>... mappingList)
-    {
+    public void addMappings(Mapping<?, ?>... mappingList) {
         mappings.addAll(Arrays.asList(mappingList));
     }
 
-    public boolean removeMappings(List<Mapping<?,?>> mappingList)
-    {
+    public boolean removeMappings(List<Mapping<?, ?>> mappingList) {
         return mappings.removeAll(mappingList);
     }
 
-    public boolean removeMappings(Mapping<?,?>... mappingList)
-    {
+    public boolean removeMappings(Mapping<?, ?>... mappingList) {
         return mappings.removeAll(Arrays.asList(mappingList));
     }
 
-    public List<Mapping<?,?>> getMappings()
-    {
+    public List<Mapping<?, ?>> getMappings() {
         return this.mappings;
     }
 
-    public List<Profile> getProfiles()
-    {
+    public List<Profile> getProfiles() {
         return profiles;
     }
 
-    private <T> List<PropertyDescriptor> getProperties(T obj) throws IntrospectionException {
-        List<PropertyDescriptor> props = new ArrayList<>();
+    private void init(boolean readProfiles) {
+        if(readProfiles) {
+            Reflections reflections = new Reflections(new ConfigurationBuilder()
+                    .setUrls(ClasspathHelper.forPackage(""))
+                    //Exclude common packages where no profiles can be found
+                    .filterInputsBy(new FilterBuilder()
+                            .include(".*")
+                            .exclude("java.*")
+                            .exclude("org.springframework.*")
+                            .exclude("org.hibernate.*")
+                            .exclude("sun.*")
+                            .exclude("android.*")
+                    ));
+            Set<Class<? extends Profile>> profileTypes = reflections.getSubTypesOf(Profile.class);
 
-        for (PropertyDescriptor pd : Introspector.getBeanInfo(obj.getClass()).getPropertyDescriptors()) {
-            if (pd.getReadMethod() != null && pd.getWriteMethod() != null) {
-                props.add(pd);
-            }
-        }
+            for (Class<? extends Profile> profileType : profileTypes) {
+                try {
+                    Profile profile = profileType.getDeclaredConstructor().newInstance();
+                    profiles.add(profile);
 
-        return props;
-    }
-
-    private <T> List<PropertyDescriptor> handleProperties(T obj) throws IntrospectionException
-    {
-        List<PropertyDescriptor> res = cache.get(obj.getClass());
-        if (res == null)
-        {
-            res = getProperties(obj);
-
-            cache.put(obj.getClass(), res);
-        }
-
-        return res;
-    }
-
-    private <S, T> Mapping<S, T> searchForMapping(S source, T target) {
-        List<Mapping<S,T>> correctMappings = new ArrayList<>();
-
-        for (Mapping mapping : mappings) {
-            if (mapping.getSource() == source.getClass() && mapping.getTarget() == target.getClass()) {
-                correctMappings.add(mapping);
-            }
-        }
-
-        Mapping<S,T> result = new Mapping(source.getClass(), target.getClass());
-        for(Mapping<S,T> mapping : correctMappings)
-        {
-            result.getTranslations().addAll(mapping.getTranslations());
-            result.getIgnoredProperties().addAll(mapping.getIgnoredProperties());
-
-            if(result.getMappingType() == null || result.getMappingType().getValue() < mapping.getMappingType().getValue())
-            {
-                result.mappingType(mapping.getMappingType());
-            }
-        }
-
-        return result;
-    }
-
-    private <S,T> List<Translation<S,T,?>> createBaseTranslations(List<PropertyDescriptor> readProps, List<PropertyDescriptor> writeProps, List<Method> ignoredProperties)
-    {
-        List<Translation<S, T, ?>> translations = new ArrayList<>();
-
-        for (PropertyDescriptor read : readProps) {
-            if(ignoredProperties.contains(read.getReadMethod()))
-                continue;
-
-            for (PropertyDescriptor write : writeProps)
-            {
-                if(read.getName().equals(write.getName()))
-                    translations.add(new BaseTranslation<>(read.getReadMethod(), write.getWriteMethod()));
-            }
-        }
-
-        return translations;
-    }
-
-    private void init() {
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage(""))
-                //Exclude common packages where no profiles can be found
-                .filterInputsBy(new FilterBuilder()
-                        .include(".*")
-                        .exclude("java.*")
-                        .exclude("org.springframework.*")
-                        .exclude("org.hibernate.*")
-                        .exclude("sun.*")
-                        .exclude("android.*")
-                ));
-        Set<Class<? extends Profile>> profileTypes = reflections.getSubTypesOf(Profile.class);
-
-        for (Class<? extends Profile> profileType : profileTypes) {
-            try {
-                Profile profile = profileType.getDeclaredConstructor().newInstance();
-                profiles.add(profile);
-
-                if (profile.getMappings() != null)
-                    mappings.addAll(profile.getMappings());
-            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new ReadProfilesFaildedException("Error while creating Profile " + profileType.getName() + ". Maybe you forgot the parameterless constructor");
+                    if (profile.getMappings() != null)
+                        mappings.addAll(profile.getMappings());
+                } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                    throw new ReadProfilesFaildedException("Error while creating Profile " + profileType.getName() + ". Maybe you forgot the parameterless constructor");
+                }
             }
         }
 

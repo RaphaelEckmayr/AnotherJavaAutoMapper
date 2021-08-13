@@ -3,8 +3,7 @@ package net.AJAM.Mapper;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 
-class BaseTranslation<S,T,V> extends Translation<S,T,V>
-{
+class BaseTranslation<S, T, V> extends Translation<S, T, V> {
     private Method getter;
     private Method setter;
 
@@ -35,18 +34,14 @@ class BaseTranslation<S,T,V> extends Translation<S,T,V>
         Class<?> writePropertyType = setter.getParameterTypes()[0];
 
         try {
-            if(readPropertyType == writePropertyType)
-            {
+            if (readPropertyType == writePropertyType) {
                 setter.invoke(target, getter.invoke(source));
-            }
-            else if(mappingType != MappingType.STRICT) {
+            } else if (mappingType != MappingType.STRICT) {
                 Function conversion = ConversionManager.getConversionFunction(readPropertyType, writePropertyType, mappingType);
                 if (conversion != null)
                     setter.invoke(target, conversion.apply(getter.invoke(source)));
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return false;
         }
 
