@@ -59,7 +59,7 @@ new Mapping<>(PersonEntity.class, PersonDto.class)
                 .forMembers(x -> x.getName.split(" "),
                 opt->opt.mapTo(PersonDto::setFirstName), opt->opt.mapTo(PersonDto::setLastName));
 ```
-In this case you can also skip elements of the array
+You can also skip elements of the array
 ```java
 new Mapping<>(PersonEntity.class, PersonDto.class)
                 .forMembers(x -> x.getName.split(" "),
