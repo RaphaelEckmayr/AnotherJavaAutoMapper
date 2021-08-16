@@ -3,6 +3,7 @@ package net.AJAM.Mapper;
 import net.AJAM.Mapper.Interfaces.ConversionFunction;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -45,78 +46,98 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private boolean treatSpecialCases(S source, T target, MappingType mappingType) {
         Class<?> readPropertyType = getter.getPropertyType();
-        Class<?> writePropertyType = setter.getPropertyType();
 
         if(mappingType == MappingType.STRICT)
             return false;
 
         try {
             if (List.class.isAssignableFrom(readPropertyType)) {
-                ConversionFunction conversion = getConversionFunctionForSpecialCases(source, target, mappingType);
-
-                List result;
-                if(writePropertyType.isInterface())
-                    result = new ArrayList();
-                else
-                    result = (List) writePropertyType.getDeclaredConstructor().newInstance();
-
-                List<?> getterRes = (List<?>) getter.getReadMethod().invoke(source);
-
-                for (Object getterResElement : getterRes) {
-                    result.add(conversion.convert(getterResElement));
-                }
-
-                setter.getWriteMethod().invoke(target, result);
+                handleList(source, target, mappingType);
 
                 return true;
             }
             else if(Set.class.isAssignableFrom(readPropertyType))
             {
-                ConversionFunction conversion = getConversionFunctionForSpecialCases(source, target, mappingType);
-
-                Set result;
-                if(writePropertyType.isInterface())
-                    result = new HashSet();
-                else
-                    result = (Set) writePropertyType.getDeclaredConstructor().newInstance();
-
-                Set<?> getterRes = (Set<?>) getter.getReadMethod().invoke(source);
-
-                for (Object getterResElement : getterRes) {
-                    result.add(conversion.convert(getterResElement));
-                }
-
-                setter.getWriteMethod().invoke(target, result);
+                handleSet(source, target, mappingType);
 
                 return true;
             }
             else if(Map.class.isAssignableFrom(readPropertyType))
             {
-                ConversionFunction conversion = getConversionFunctionForSpecialCases(source, target, mappingType);
-
-                Map result;
-                if(writePropertyType.isInterface())
-                    result = new HashMap();
-                else
-                    result = (Map) writePropertyType.getDeclaredConstructor().newInstance();
-
-                Map<?,?> getterRes = (Map<?,?>) getter.getReadMethod().invoke(source);
-
-                for (Object key : getterRes.keySet()) {
-                    result.put(key, conversion.convert(getterRes.get(key)));
-                }
-
-                setter.getWriteMethod().invoke(target, result);
+                handleMap(source, target, mappingType);
 
                 return true;
             }
         }
-        catch(Exception e)
+        catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e)
         {
-            e.printStackTrace();
+
         }
 
         return false;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void handleList(S source, T target, MappingType mappingType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        ConversionFunction conversion = getConversionFunctionForSpecialCases(source, target, mappingType);
+
+        Class<?> writePropertyType = setter.getPropertyType();
+
+        List result;
+        if(writePropertyType.isInterface())
+            result = new ArrayList();
+        else
+            result = (List) writePropertyType.getDeclaredConstructor().newInstance();
+
+        List<?> getterRes = (List<?>) getter.getReadMethod().invoke(source);
+
+        for (Object getterResElement : getterRes) {
+            result.add(conversion.convert(getterResElement));
+        }
+
+        setter.getWriteMethod().invoke(target, result);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void handleSet(S source, T target, MappingType mappingType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        ConversionFunction conversion = getConversionFunctionForSpecialCases(source, target, mappingType);
+
+        Class<?> writePropertyType = setter.getPropertyType();
+
+        Set result;
+        if(writePropertyType.isInterface())
+            result = new HashSet();
+        else
+            result = (Set) writePropertyType.getDeclaredConstructor().newInstance();
+
+        Set<?> getterRes = (Set<?>) getter.getReadMethod().invoke(source);
+
+        for (Object getterResElement : getterRes) {
+            result.add(conversion.convert(getterResElement));
+        }
+
+        setter.getWriteMethod().invoke(target, result);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void handleMap(S source, T target, MappingType mappingType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        ConversionFunction conversion = getConversionFunctionForSpecialCases(source, target, mappingType);
+
+        Class<?> writePropertyType = setter.getPropertyType();
+
+        Map result;
+        if(writePropertyType.isInterface())
+            result = new HashMap();
+        else
+            result = (Map) writePropertyType.getDeclaredConstructor().newInstance();
+
+        Map<?,?> getterRes = (Map<?,?>) getter.getReadMethod().invoke(source);
+
+        for (Object key : getterRes.keySet()) {
+            result.put(key, conversion.convert(getterRes.get(key)));
+        }
+
+        setter.getWriteMethod().invoke(target, result);
     }
 
     @SuppressWarnings("rawtypes")
