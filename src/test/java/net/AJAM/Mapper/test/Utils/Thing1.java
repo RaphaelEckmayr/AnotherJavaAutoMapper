@@ -1,12 +1,11 @@
 package net.AJAM.Mapper.test.Utils;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class Thing1 {
     private int Id;
     private String name;
-    private LinkedList<Detail1> details;
+    private List<Detail1> details;
 
     public int getId() {
         return Id;
@@ -24,18 +23,18 @@ public class Thing1 {
         this.name = name;
     }
 
-    public LinkedList<Detail1> getDetails() {
+    public List<Detail1> getDetails() {
         return details;
     }
 
-    public void setDetails(LinkedList<Detail1> details) {
+    public void setDetails(List<Detail1> details) {
         this.details = details;
     }
 
     public Thing1() {
     }
 
-    public Thing1(int id, String name, LinkedList<Detail1> details) {
+    public Thing1(int id, String name, List<Detail1> details) {
         Id = id;
         this.name = name;
         this.details = details;

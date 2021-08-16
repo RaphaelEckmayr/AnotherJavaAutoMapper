@@ -8,32 +8,16 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 class BaseTranslation<S, T, V> extends Translation<S, T, V> {
-    private PropertyDescriptor getter;
-    private PropertyDescriptor setter;
+    private final PropertyDescriptor getter;
+    private final PropertyDescriptor setter;
 
     public BaseTranslation(PropertyDescriptor getter, PropertyDescriptor setter) {
         this.getter = getter;
         this.setter = setter;
     }
 
-    protected PropertyDescriptor getGetter() {
-        return getter;
-    }
-
-    protected void setGetter(PropertyDescriptor getter) {
-        this.getter = getter;
-    }
-
-    protected PropertyDescriptor getSetter() {
-        return setter;
-    }
-
-    protected void setSetter(PropertyDescriptor setter) {
-        this.setter = setter;
-    }
-
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected boolean translate(S source, T target, MappingType mappingType) {
         Class<?> readPropertyType = getter.getPropertyType();
         Class<?> writePropertyType = setter.getPropertyType();
@@ -135,7 +119,7 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
         return false;
     }
 
-
+    @SuppressWarnings("rawtypes")
     private ConversionFunction getConversionFunctionForSpecialCases(S source, T target, MappingType mappingType) throws IllegalArgumentException
     {
         Type[] sourceTypes = getTypeParameters(source, getter.getName());
@@ -172,10 +156,5 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
 
         if (!Objects.equals(getter, that.getter)) return false;
         return Objects.equals(setter, that.setter);
-    }
-
-
-    private static <T1> List<T1> createListOfType(Class<T1> type){
-        return new ArrayList<T1>();
     }
 }

@@ -634,40 +634,40 @@ public class UnitTests {
         Assertions.assertEquals(expected, actual);
     }
 
-//    @Test
-//    @DisplayName("Map in Mapping")
-//    public void testMapInMapping()
-//    {
-//        List<Detail1> details1 = new ArrayList<>();
-//        details1.add(new Detail1(1, "Something"));
-//        details1.add(new Detail1(4, "Something else"));
-//
-//        List<Detail2> details2 = new ArrayList<>();
-//        details2.add(new Detail2(1, "Something"));
-//        details2.add(new Detail2(4, "Something else"));
-//
-//        Thing1 thing1 = new Thing1(12, "thing", details1);
-//        Thing2 expected = new Thing2(12, "thing", details2);
-//
-//
-//        Mapper mapper = new Mapper(false);
-//        mapper.addMapping(new Mapping<>(Thing1.class, Thing2.class)
-//                .forMember(Thing1::getDetails, options -> options.mapTo((x,y) -> x.setDetails(mapper.mapList(Detail2.class, y)))));
-//
-//        Thing2 actual = mapper.map(Thing2.class, thing1);
-//
-//        Assertions.assertEquals(expected, actual);
-//    }
+    @Test
+    @DisplayName("Map in Mapping")
+    public void testMapInMapping()
+    {
+        List<Detail1> details1 = new ArrayList<>();
+        details1.add(new Detail1(1, "Something"));
+        details1.add(new Detail1(4, "Something else"));
+
+        List<Detail2> details2 = new ArrayList<>();
+        details2.add(new Detail2(1, "Something"));
+        details2.add(new Detail2(4, "Something else"));
+
+        Thing1 thing1 = new Thing1(12, "thing", details1);
+        Thing2 expected = new Thing2(12, "thing", details2);
+
+
+        Mapper mapper = new Mapper(false);
+        mapper.addMapping(new Mapping<>(Thing1.class, Thing2.class)
+                .forMember(Thing1::getDetails, options -> options.mapTo((x,y) -> x.setDetails(mapper.mapList(Detail2.class, y)))));
+
+        Thing2 actual = mapper.map(Thing2.class, thing1);
+
+        Assertions.assertEquals(expected, actual);
+    }
 
     @Test
     @DisplayName("Map in Conversion")
     public void testMapInConversion()
     {
-        LinkedList<Detail1> details1 = new LinkedList<>();
+        List<Detail1> details1 = new ArrayList<>();
         details1.add(new Detail1(1, "Something"));
         details1.add(new Detail1(4, "Something else"));
 
-        LinkedList<Detail2> details2 = new LinkedList<>();
+        List<Detail2> details2 = new ArrayList<>();
         details2.add(new Detail2(1, "Something"));
         details2.add(new Detail2(4, "Something else"));
 
