@@ -4,15 +4,15 @@ import net.AJAM.Mapper.*;
 import net.AJAM.Mapper.test.Profiles.IgnoreAllProfile;
 import net.AJAM.Mapper.test.Profiles.TestProfile;
 import net.AJAM.Mapper.test.Profiles.TestProfile1;
-import net.AJAM.Mapper.test.Utils.Person1;
-import net.AJAM.Mapper.test.Utils.Person2;
-import net.AJAM.Mapper.test.Utils.Person3;
+import net.AJAM.Mapper.test.Utils.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperties;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -338,7 +338,8 @@ public class UnitTests {
     public void testIgnore() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", LocalDate.of(2004, 12, 12), "2020-12-10", null);
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
         Mapper mapper = new Mapper(false);
         mapper.addProfile(TestProfile.class);
@@ -626,8 +627,59 @@ public class UnitTests {
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
 
         Mapper mapper = new Mapper(false);
-        mapper.addMapping(new Mapping<>(Person1.class, Person3.class).forMembers(x -> x.getName().split(" "), opt -> opt.mapTo(Person3::setFirstname), x -> x.mapTo(Person3::setLastname)));
+        mapper.addMapping(new Mapping<>(Person1.class, Person3.class).forMembers(x -> x.getName().split(" "),
+                opt -> opt.mapTo(Person3::setFirstname), x -> x.mapTo(Person3::setLastname)));
         Person3 actual = mapper.map(Person3.class, person, MappingType.STRICT);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+//    @Test
+//    @DisplayName("Map in Mapping")
+//    public void testMapInMapping()
+//    {
+//        List<Detail1> details1 = new ArrayList<>();
+//        details1.add(new Detail1(1, "Something"));
+//        details1.add(new Detail1(4, "Something else"));
+//
+//        List<Detail2> details2 = new ArrayList<>();
+//        details2.add(new Detail2(1, "Something"));
+//        details2.add(new Detail2(4, "Something else"));
+//
+//        Thing1 thing1 = new Thing1(12, "thing", details1);
+//        Thing2 expected = new Thing2(12, "thing", details2);
+//
+//
+//        Mapper mapper = new Mapper(false);
+//        mapper.addMapping(new Mapping<>(Thing1.class, Thing2.class)
+//                .forMember(Thing1::getDetails, options -> options.mapTo((x,y) -> x.setDetails(mapper.mapList(Detail2.class, y)))));
+//
+//        Thing2 actual = mapper.map(Thing2.class, thing1);
+//
+//        Assertions.assertEquals(expected, actual);
+//    }
+
+    @Test
+    @DisplayName("Map in Conversion")
+    public void testMapInConversion()
+    {
+        LinkedList<Detail1> details1 = new LinkedList<>();
+        details1.add(new Detail1(1, "Something"));
+        details1.add(new Detail1(4, "Something else"));
+
+        LinkedList<Detail2> details2 = new LinkedList<>();
+        details2.add(new Detail2(1, "Something"));
+        details2.add(new Detail2(4, "Something else"));
+
+        Thing1 thing1 = new Thing1(12, "thing", details1);
+        Thing2 expected = new Thing2(12, "thing", details2);
+
+
+        Mapper mapper = new Mapper(false);
+
+        ConversionManager.addConversion(new Conversion<>(Detail1.class, Detail2.class, MappingType.MEDIUM, x -> mapper.map(Detail2.class, x)));
+
+        Thing2 actual = mapper.map(Thing2.class, thing1, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual);
     }

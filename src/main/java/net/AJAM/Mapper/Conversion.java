@@ -1,14 +1,14 @@
 package net.AJAM.Mapper;
 
-import java.util.function.Function;
+import net.AJAM.Mapper.Interfaces.ConversionFunction;
 
 public class Conversion<S, T> {
     private Class<S> from;
     private Class<T> to;
-    private Function<S, T> conversionFunction;
+    private ConversionFunction<S, T> conversionFunction;
     private MappingType mappingType;
 
-    public Conversion(Class<S> from, Class<T> to, MappingType mappingType, Function<S, T> conversionFunction) {
+    public Conversion(Class<S> from, Class<T> to, MappingType mappingType, ConversionFunction<S, T> conversionFunction) {
         this.from = from;
         this.to = to;
         this.conversionFunction = conversionFunction;
@@ -34,11 +34,11 @@ public class Conversion<S, T> {
         this.to = to;
     }
 
-    public Function<S, T> getConversionFunction() {
+    public ConversionFunction<S, T> getConversionFunction() {
         return conversionFunction;
     }
 
-    public void setConversionFunction(Function<S, T> conversionFunction) {
+    public void setConversionFunction(ConversionFunction<S, T> conversionFunction) {
         this.conversionFunction = conversionFunction;
     }
 

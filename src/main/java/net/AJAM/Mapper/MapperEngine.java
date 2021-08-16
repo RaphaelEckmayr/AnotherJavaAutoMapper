@@ -118,7 +118,7 @@ public class MapperEngine {
 
             for (PropertyDescriptor write : writeProps) {
                 if (read.getName().equals(write.getName()))
-                    translations.add(new BaseTranslation<>(read.getReadMethod(), write.getWriteMethod()));
+                    translations.add(new BaseTranslation<>(read, write));
             }
         }
 

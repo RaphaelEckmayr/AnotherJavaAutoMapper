@@ -1,23 +1,21 @@
 package net.AJAM.Mapper;
 
-import net.AJAM.Mapper.Exceptions.ReadProfilesFaildedException;
+import net.AJAM.Mapper.Exceptions.ReadProfilesFailedException;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class Mapper {
     private final List<Mapping<?, ?>> mappings = Collections.synchronizedList(new ArrayList<>());
     private final List<Profile> profiles = Collections.synchronizedList(new ArrayList<>());
-    private MapperEngine mapperEngine = MapperEngine.getInstance();
+    private final MapperEngine mapperEngine = MapperEngine.getInstance();
+
+    private static List<Profile> createdProfiles;
 
     public Mapper() {
         init(true);
@@ -97,7 +95,7 @@ public class Mapper {
 
             return profile;
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new ReadProfilesFaildedException("Error while creating Profile " + profileClass.getName() + ". Maybe you forgot the parameterless constructor");
+            throw new ReadProfilesFailedException("Error while creating Profile " + profileClass.getName() + ". Maybe you forgot the parameterless constructor");
         }
     }
 
@@ -186,34 +184,50 @@ public class Mapper {
         return profiles;
     }
 
+    public void ReloadProfiles()
+    {
+        createProfiles();
+    }
+
     private void init(boolean readProfiles) {
         if(readProfiles) {
-            Reflections reflections = new Reflections(new ConfigurationBuilder()
-                    .setUrls(ClasspathHelper.forPackage(""))
-                    //Exclude common packages where no profiles can be found
-                    .filterInputsBy(new FilterBuilder()
-                            .include(".*")
-                            .exclude("java.*")
-                            .exclude("org.springframework.*")
-                            .exclude("org.hibernate.*")
-                            .exclude("sun.*")
-                            .exclude("android.*")
-                    ));
-            Set<Class<? extends Profile>> profileTypes = reflections.getSubTypesOf(Profile.class);
+            if(createdProfiles == null)
+                createProfiles();
 
-            for (Class<? extends Profile> profileType : profileTypes) {
-                try {
-                    Profile profile = profileType.getDeclaredConstructor().newInstance();
-                    profiles.add(profile);
-
-                    if (profile.getMappings() != null)
-                        mappings.addAll(profile.getMappings());
-                } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    throw new ReadProfilesFaildedException("Error while creating Profile " + profileType.getName() + ". Maybe you forgot the parameterless constructor");
-                }
+            profiles.addAll(createdProfiles);
+            for(Profile prof : createdProfiles)
+            {
+                mappings.addAll(prof.getMappings());
             }
         }
 
         ConversionManager.initLooseConversions();
+    }
+
+    private void createProfiles()
+    {
+        createdProfiles = new ArrayList<>();
+
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forPackage(""))
+                //Exclude common packages where no profiles can be found
+                .filterInputsBy(new FilterBuilder()
+                        .include(".*")
+                        .exclude("java.*")
+                        .exclude("org.springframework.*")
+                        .exclude("org.hibernate.*")
+                        .exclude("sun.*")
+                        .exclude("android.*")
+                ));
+        Set<Class<? extends Profile>> profileTypes = reflections.getSubTypesOf(Profile.class);
+
+        for (Class<? extends Profile> profileType : profileTypes) {
+            try {
+                Profile profile = profileType.getDeclaredConstructor().newInstance();
+                createdProfiles.add(profile);
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new ReadProfilesFailedException("Error while creating Profile " + profileType.getName() + ". Maybe you forgot the parameterless constructor");
+            }
+        }
     }
 }
