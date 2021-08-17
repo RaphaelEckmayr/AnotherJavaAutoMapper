@@ -69,7 +69,7 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private boolean handleList(S source, T target, MappingType mappingType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, TypeParameterException {
-        ConversionFunction conversion = getConversionByObject(source, target, mappingType);
+        ConversionFunction conversion = getConversionByObject(mappingType);
         if (conversion == null) return false;
 
         Class<?> writePropertyType = setter.getPropertyType();
@@ -94,7 +94,7 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private boolean handleSet(S source, T target, MappingType mappingType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, TypeParameterException {
-        ConversionFunction conversion = getConversionByObject(source, target, mappingType);
+        ConversionFunction conversion = getConversionByObject(mappingType);
         if (conversion == null) return false;
 
         Class<?> writePropertyType = setter.getPropertyType();
@@ -119,8 +119,8 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private boolean handleMap(S source, T target, MappingType mappingType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, TypeParameterException {
-        Type[] sourceTypes = getTypeParameters(source, getter.getName());
-        Type[] targetTypes = getTypeParameters(target, setter.getName());
+        Type[] sourceTypes = ((ParameterizedType) getter.getReadMethod().getGenericReturnType()).getActualTypeArguments();
+        Type[] targetTypes = ((ParameterizedType) setter.getReadMethod().getGenericReturnType()).getActualTypeArguments();
 
         if (sourceTypes == null || targetTypes == null)
             return false;
@@ -165,9 +165,9 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
     }
 
     @SuppressWarnings("rawtypes")
-    private ConversionFunction getConversionByObject(S source, T target, MappingType mappingType) throws TypeParameterException {
-        Type[] sourceTypes = getTypeParameters(source, getter.getName());
-        Type[] targetTypes = getTypeParameters(target, setter.getName());
+    private ConversionFunction getConversionByObject(MappingType mappingType) throws TypeParameterException {
+        Type[] sourceTypes = ((ParameterizedType) getter.getReadMethod().getGenericReturnType()).getActualTypeArguments();
+        Type[] targetTypes = ((ParameterizedType) setter.getReadMethod().getGenericReturnType()).getActualTypeArguments();
 
         if (sourceTypes == null || targetTypes == null)
             throw new TypeParameterException("SourceTypes or targetTypes is null");
@@ -183,15 +183,6 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
         Class<?> targetClass = (Class<?>) targetType;
 
         return ConversionManager.getConversionFunction(sourceClass, targetClass, mappingType);
-    }
-
-    private <T1> Type[] getTypeParameters(T1 target, String fieldName) throws TypeParameterException {
-        try {
-            ParameterizedType getterParameterizedType = (ParameterizedType) target.getClass().getDeclaredField(fieldName).getGenericType();
-            return getterParameterizedType.getActualTypeArguments();
-        } catch (NoSuchFieldException | ClassCastException e) {
-            throw new TypeParameterException("Failed to get ParameterizedType from Field");
-        }
     }
 
     @Override
