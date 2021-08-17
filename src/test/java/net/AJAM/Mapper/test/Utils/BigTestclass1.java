@@ -1,6 +1,6 @@
 package net.AJAM.Mapper.test;
 
-public class BigTestclass {
+public class BigTestclass1 {
     private int testprop1;
     private int testprop2;
     private int testprop3;
@@ -32,10 +32,10 @@ public class BigTestclass {
     private int testprop29;
     private int testprop30;
 
-    public BigTestclass() {
+    public BigTestclass1() {
     }
 
-    public BigTestclass(int testprop1, int testprop2, int testprop3, int testprop4, int testprop5, int testprop6, int testprop7, int testprop8, int testprop9, int testprop10, int testprop11, int testprop12, int testprop13, int testprop14, int testprop15, int testprop16, int testprop17, int testprop18, int testprop19, int testprop20, int testprop21, int testprop22, int testprop23, int testprop24, int testprop25, int testprop26, int testprop27, int testprop28, int testprop29, int testprop30) {
+    public BigTestclass1(int testprop1, int testprop2, int testprop3, int testprop4, int testprop5, int testprop6, int testprop7, int testprop8, int testprop9, int testprop10, int testprop11, int testprop12, int testprop13, int testprop14, int testprop15, int testprop16, int testprop17, int testprop18, int testprop19, int testprop20, int testprop21, int testprop22, int testprop23, int testprop24, int testprop25, int testprop26, int testprop27, int testprop28, int testprop29, int testprop30) {
         this.testprop1 = testprop1;
         this.testprop2 = testprop2;
         this.testprop3 = testprop3;

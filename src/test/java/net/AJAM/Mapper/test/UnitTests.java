@@ -8,12 +8,9 @@ import net.AJAM.Mapper.test.Utils.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIfSystemProperties;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class UnitTests {
@@ -655,6 +652,27 @@ public class UnitTests {
                 .forMember(Thing1::getDetails, options -> options.mapTo((x,y) -> x.setDetails(mapper.mapList(Detail2.class, y)))));
 
         Thing2 actual = mapper.map(Thing2.class, thing1);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test Map Collections")
+    public void testMapCollections()
+    {
+        List<String> list1 = Arrays.asList("1", "2", "3");
+        Set<String> set1 = new HashSet<String>() {{add("1"); add("2"); add("3");}};
+        Map<String, Integer> map1= new HashMap<String, Integer>() {{put("1", 1); put("2",2); put("3", 3);}};
+
+        List<String> list2 = Arrays.asList("1", "2", "3");
+        Set<Integer> set2 = new HashSet<Integer>() {{add(1); add(2); add(3);}};
+        Map<Integer, String> map2= new HashMap<Integer, String>() {{put(1, "1"); put(2,"2"); put(3, "3");}};
+
+        CollectionsTestclass1 testclass = new CollectionsTestclass1(list1, set1, map1);
+        CollectionsTestclass2 expected = new CollectionsTestclass2(list2, set2, map2);
+
+        Mapper mapper = new Mapper(false);
+        CollectionsTestclass2 actual = mapper.map(CollectionsTestclass2.class, testclass);
 
         Assertions.assertEquals(expected, actual);
     }
