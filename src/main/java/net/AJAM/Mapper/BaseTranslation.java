@@ -73,15 +73,7 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private boolean handleList(S source, T target, MappingType mappingType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, TypeParameterException {
-        Type[] sourceTypes = getTypeParameters(source, getter.getName());
-        Type[] targetTypes = getTypeParameters(target, setter.getName());
-
-        if (sourceTypes == null || targetTypes == null)
-            throw new TypeParameterException("SourceTypes or targetTypes is null");
-        if (Arrays.equals(sourceTypes, targetTypes))
-            throw new TypeParameterException("SourceTypes != targetTypes");
-
-        ConversionFunction conversion = getConversionByTypeParameter(sourceTypes[0], targetTypes[0], mappingType);
+        ConversionFunction conversion = getConversionByObject(source, target, mappingType);
         if(conversion == null) return false;
 
         Class<?> writePropertyType = setter.getPropertyType();
@@ -105,15 +97,7 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private boolean handleSet(S source, T target, MappingType mappingType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, TypeParameterException {
-        Type[] sourceTypes = getTypeParameters(source, getter.getName());
-        Type[] targetTypes = getTypeParameters(target, setter.getName());
-
-        if (sourceTypes == null || targetTypes == null)
-            throw new TypeParameterException("SourceTypes or targetTypes is null");
-        if (Arrays.equals(sourceTypes, targetTypes))
-            throw new TypeParameterException("SourceTypes != targetTypes");
-
-        ConversionFunction conversion = getConversionByTypeParameter(sourceTypes[0], targetTypes[0], mappingType);
+        ConversionFunction conversion = getConversionByObject(source, target, mappingType);
         if(conversion == null) return false;
 
         Class<?> writePropertyType = setter.getPropertyType();
@@ -136,15 +120,14 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private boolean handleMap(S source, T target, MappingType mappingType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, TypeParameterException
-    {
+    private boolean handleMap(S source, T target, MappingType mappingType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, TypeParameterException {
         Type[] sourceTypes = getTypeParameters(source, getter.getName());
         Type[] targetTypes = getTypeParameters(target, setter.getName());
 
         if (sourceTypes == null || targetTypes == null)
-            throw new TypeParameterException("SourceTypes or targetTypes is null");
+            return false;
         if (Arrays.equals(sourceTypes, targetTypes))
-            throw new TypeParameterException("SourceTypes != targetTypes");
+            return false;
 
         Class<?> writePropertyType = setter.getPropertyType();
 
@@ -184,6 +167,19 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
     }
 
     @SuppressWarnings("rawtypes")
+    private ConversionFunction getConversionByObject(S source, T target, MappingType mappingType) throws TypeParameterException {
+        Type[] sourceTypes = getTypeParameters(source, getter.getName());
+        Type[] targetTypes = getTypeParameters(target, setter.getName());
+
+        if (sourceTypes == null || targetTypes == null)
+            throw new TypeParameterException("SourceTypes or targetTypes is null");
+        if (Arrays.equals(sourceTypes, targetTypes))
+            throw new TypeParameterException("SourceTypes != targetTypes");
+
+        return getConversionByTypeParameter(sourceTypes[0], targetTypes[0], mappingType);
+    }
+
+    @SuppressWarnings("rawtypes")
     private ConversionFunction getConversionByTypeParameter(Type sourceType, Type targetType, MappingType mappingType)
     {
         Class<?> sourceClass = (Class<?>) sourceType;
@@ -191,7 +187,6 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
 
         return ConversionManager.getConversionFunction(sourceClass, targetClass, mappingType);
     }
-
 
     private <T1> Type[] getTypeParameters(T1 target, String fieldName) throws TypeParameterException {
         try {
