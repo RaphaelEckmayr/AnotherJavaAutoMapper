@@ -32,14 +32,11 @@ public class MapperEngine {
         Mapping<S, T> mapping = searchForMapping(source, target, mappings);
 
         MappingType usedMappingType = DEFAULT_MAPPING_TYPE;
-        List<Method> ignoredProperties = new ArrayList<>();
-
-        if (mapping != null)
-            ignoredProperties = mapping.getIgnoredProperties();
+        List<Method> ignoredProperties = mapping.getIgnoredProperties();
 
         if (mappingType != null)
             usedMappingType = mappingType;
-        else if (mapping != null && mapping.getMappingType() != null)
+        else if (mapping.getMappingType() != null)
             usedMappingType = mapping.getMappingType();
 
         List<PropertyDescriptor> readProps;
@@ -53,9 +50,7 @@ public class MapperEngine {
 
         List<Translation<S, T, ?>> translations = createBaseTranslations(readProps, writeProps, ignoredProperties);
 
-        if (mapping != null) {
-            translations.addAll(mapping.getTranslations());
-        }
+        translations.addAll(mapping.getTranslations());
 
         for (Translation<S, T, ?> trans : translations) {
             trans.translate(source, target, usedMappingType);
@@ -75,6 +70,7 @@ public class MapperEngine {
         return res;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private <S, T> Mapping<S, T> searchForMapping(S source, T target, List<Mapping<?,?>> mappings) {
         List<Mapping<S, T>> correctMappings = new ArrayList<>();
 
@@ -84,7 +80,7 @@ public class MapperEngine {
             }
         }
 
-        Mapping<S, T> result = new Mapping(source.getClass(), target.getClass());
+        Mapping<S,T> result = new Mapping(source.getClass(), target.getClass());
         for (Mapping<S, T> mapping : correctMappings) {
             result.getTranslations().addAll(mapping.getTranslations());
             result.getIgnoredProperties().addAll(mapping.getIgnoredProperties());

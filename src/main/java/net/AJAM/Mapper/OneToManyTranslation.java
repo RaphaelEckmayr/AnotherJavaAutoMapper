@@ -3,7 +3,6 @@ package net.AJAM.Mapper;
 import net.AJAM.Mapper.Interfaces.PropertyGetter;
 import net.AJAM.Mapper.Interfaces.PropertySetter;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 public class OneToManyTranslation<S, T, V> extends Translation<S, T, V> {
@@ -22,7 +21,7 @@ public class OneToManyTranslation<S, T, V> extends Translation<S, T, V> {
         return options;
     }
 
-    protected void setOptions(List<MappingOption<T, V>> target) {
+    protected void setOptions(List<MappingOption<T, V>> options) {
         this.options = options;
     }
 
@@ -38,10 +37,10 @@ public class OneToManyTranslation<S, T, V> extends Translation<S, T, V> {
     protected boolean translate(S source, T target, MappingType mappingType) {
         int index = 0;
         for (V getterResult : propertyGetter.get(source)) {
-            MappingOption option = options.get(index);
+            MappingOption<T,V> option = options.get(index);
 
             if (!option.isIgnore()) {
-                PropertySetter setter = option.getSetter();
+                PropertySetter<T, V> setter = option.getSetter();
                 setter.set(target, getterResult);
             }
 
