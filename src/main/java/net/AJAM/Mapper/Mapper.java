@@ -13,15 +13,10 @@ import java.util.concurrent.CompletableFuture;
 public class Mapper {
     private final List<Mapping<?, ?>> mappings = Collections.synchronizedList(new ArrayList<>());
     private final List<Profile> profiles = Collections.synchronizedList(new ArrayList<>());
-    private final MapperEngine mapperEngine = MapperEngine.getInstance();
 
     private static List<Profile> createdProfiles;
 
-    public Mapper() {
-        init(true);
-    }
-
-    public Mapper(boolean readProfiles) {
+    protected Mapper(boolean readProfiles) {
         init(readProfiles);
     }
 
@@ -45,7 +40,7 @@ public class Mapper {
     }
 
     public <S, T> T map(T target, S source, MappingType mappingType) {
-        return mapperEngine.internalMap(target, source, mappingType, mappings);
+        return MapperEngine.internalMap(target, source, mappingType, mappings);
     }
 
     public <T, S> CompletableFuture<T> mapAsync(T target, S source, MappingType mappingType) {
@@ -164,8 +159,8 @@ public class Mapper {
         mappings.addAll(mappingList);
     }
 
-    public void addMappings(Mapping<?, ?>... mappingList) {
-        mappings.addAll(Arrays.asList(mappingList));
+    public void addMappings(Mapping<?, ?>... mapping) {
+        mappings.addAll(Arrays.asList(mapping));
     }
 
     public boolean removeMappings(List<Mapping<?, ?>> mappingList) {
@@ -184,7 +179,7 @@ public class Mapper {
         return profiles;
     }
 
-    public void ReloadProfiles()
+    public void reloadProfiles()
     {
         createProfiles();
     }

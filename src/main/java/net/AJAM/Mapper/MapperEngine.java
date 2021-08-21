@@ -10,24 +10,14 @@ public class MapperEngine {
     private static final MappingType DEFAULT_MAPPING_TYPE = MappingType.MEDIUM;
     private static final int CACHE_SIZE = 200;
 
-    private static MapperEngine instance;
-
-    private final Map<Class<?>, List<PropertyDescriptor>> cache = Collections.synchronizedMap(new LinkedHashMap<Class<?>, List<PropertyDescriptor>>() {
+    private static final Map<Class<?>, List<PropertyDescriptor>> cache = Collections.synchronizedMap(new LinkedHashMap<Class<?>, List<PropertyDescriptor>>() {
         @Override
         protected boolean removeEldestEntry(final Map.Entry eldest) {
             return size() > CACHE_SIZE;
         }
     });
 
-    public static MapperEngine getInstance()
-    {
-        if(instance == null)
-            instance = new MapperEngine();
-
-        return instance;
-    }
-
-    public <S,T> T internalMap(T target, S source, MappingType mappingType, List<Mapping<?,?>> mappings)
+    protected static <S,T> T internalMap(T target, S source, MappingType mappingType, List<Mapping<?,?>> mappings)
     {
         Mapping<S, T> mapping = searchForMapping(source, target, mappings);
 
@@ -59,7 +49,7 @@ public class MapperEngine {
         return target;
     }
 
-    private <T> List<PropertyDescriptor> handleProperties(T obj) throws IntrospectionException {
+    private static <T> List<PropertyDescriptor> handleProperties(T obj) throws IntrospectionException {
         List<PropertyDescriptor> res = cache.get(obj.getClass());
         if (res == null) {
             res = getProperties(obj);
@@ -71,7 +61,7 @@ public class MapperEngine {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <S, T> Mapping<S, T> searchForMapping(S source, T target, List<Mapping<?,?>> mappings) {
+    private static <S, T> Mapping<S, T> searchForMapping(S source, T target, List<Mapping<?, ?>> mappings) {
         List<Mapping<S, T>> correctMappings = new ArrayList<>();
 
         for (Mapping mapping : mappings) {
@@ -93,7 +83,7 @@ public class MapperEngine {
         return result;
     }
 
-    private <T> List<PropertyDescriptor> getProperties(T obj) throws IntrospectionException {
+    private static <T> List<PropertyDescriptor> getProperties(T obj) throws IntrospectionException {
         List<PropertyDescriptor> props = new ArrayList<>();
 
         for (PropertyDescriptor pd : Introspector.getBeanInfo(obj.getClass()).getPropertyDescriptors()) {
@@ -105,7 +95,7 @@ public class MapperEngine {
         return props;
     }
 
-    private <S, T> List<Translation<S, T, ?>> createBaseTranslations(List<PropertyDescriptor> readProps, List<PropertyDescriptor> writeProps, List<Method> ignoredProperties) {
+    private static <S, T> List<Translation<S, T, ?>> createBaseTranslations(List<PropertyDescriptor> readProps, List<PropertyDescriptor> writeProps, List<Method> ignoredProperties) {
         List<Translation<S, T, ?>> translations = new ArrayList<>();
 
         for (PropertyDescriptor read : readProps) {

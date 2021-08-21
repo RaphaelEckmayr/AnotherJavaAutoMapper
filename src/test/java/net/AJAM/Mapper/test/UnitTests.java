@@ -28,8 +28,9 @@ public class UnitTests {
         person2.setBirthDate(LocalDate.parse(person.getBirthDate()));
         person2.setPhone2(person.getPhone());
 
-        Mapper mapper = new Mapper(false);
-        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).forMember(Person1::getPhone, options -> options.mapTo(Person2::setPhone2)));
+        Mapper mapper = new MapperBuilder()
+                .addMapping(new Mapping<>(Person1.class, Person2.class).forMember(Person1::getPhone, options -> options.mapTo(Person2::setPhone2)))
+                .build();
         Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
         Assertions.assertEquals(person2, actual);
@@ -43,7 +44,7 @@ public class UnitTests {
 
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
         Person2 actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
@@ -56,7 +57,7 @@ public class UnitTests {
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         Person2 actual = mapper.map(new Person2(), person);
 
@@ -71,7 +72,7 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
                 LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
@@ -86,7 +87,7 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
                 LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         Person2 actual = mapper.map(new Person2(), person, MappingType.LOOSE);
 
@@ -100,7 +101,7 @@ public class UnitTests {
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         CompletableFuture<Person2> actual = mapper.mapAsync(Person2.class, person);
 
@@ -114,7 +115,7 @@ public class UnitTests {
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         CompletableFuture<Person2> actual = mapper.mapAsync(new Person2(), person);
 
@@ -129,7 +130,7 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
                 LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         CompletableFuture<Person2> actual = mapper.mapAsync(Person2.class, person, MappingType.LOOSE);
 
@@ -144,7 +145,7 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
                 LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         CompletableFuture<Person2> actual = mapper.mapAsync(new Person2(), person, MappingType.LOOSE);
 
@@ -165,7 +166,7 @@ public class UnitTests {
         expected.add(new Person2("1", "jon do", "idk@what", LocalDate.of(2001, 12, 10),
                 "2018-10-01", null));
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         List<Person2> actual = mapper.mapList(Person2.class, personList, MappingType.LOOSE);
 
@@ -185,7 +186,7 @@ public class UnitTests {
         expected.add(new Person2("12", "john doe", "john.doe@foo.bar", null, null, null));
         expected.add(new Person2("1", "jon do", "idk@what", null, null, null));
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         List<Person2> actual = mapper.mapList(Person2.class, personList);
 
@@ -207,7 +208,7 @@ public class UnitTests {
         expected.add(new Person2("1", "jon do", "idk@what",
                 LocalDate.of(2001, 12, 10), "2018-10-01", null));
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         CompletableFuture<List<Person2>> actual = mapper.mapListAsync(Person2.class, personList, MappingType.LOOSE);
 
@@ -227,7 +228,7 @@ public class UnitTests {
         expected.add(new Person2("12", "john doe", "john.doe@foo.bar", null, null, null));
         expected.add(new Person2("1", "jon do", "idk@what", null, null, null));
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         CompletableFuture<List<Person2>> actual = mapper.mapListAsync(Person2.class, personList);
 
@@ -241,7 +242,7 @@ public class UnitTests {
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
         Person2 actual = mapper.map(Person2.class, person, MappingType.STRICT);
 
         Assertions.assertEquals(expected, actual);
@@ -254,7 +255,7 @@ public class UnitTests {
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
         Person2 actual = mapper.map(Person2.class, person, MappingType.MEDIUM);
 
         Assertions.assertEquals(expected, actual);
@@ -268,7 +269,7 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
                 LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
         Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual);
@@ -281,7 +282,7 @@ public class UnitTests {
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
         Person2 actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
@@ -294,8 +295,9 @@ public class UnitTests {
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
 
-        Mapper mapper = new Mapper(false);
-        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT));
+        Mapper mapper = new MapperBuilder()
+                .addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT))
+                .build();
         Person2 actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
@@ -308,8 +310,8 @@ public class UnitTests {
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
-        Mapper mapper = new Mapper(false);
-        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.MEDIUM));
+        Mapper mapper = new MapperBuilder().addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.MEDIUM)).build();
+
         Person2 actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
@@ -323,11 +325,33 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
                 LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
-        Mapper mapper = new Mapper(false);
-        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.LOOSE));
+        Mapper mapper = new MapperBuilder()
+                .addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.LOOSE))
+                .build();
+
         Person2 actual = mapper.map(Person2.class, person);
 
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test MapperBuilder1")
+    public void testMapperBuilder1()
+    {
+        Mapper mapper = new MapperBuilder().isSingleton().addProfile(new TestProfile1()).build();
+        Mapper mapper1 = new MapperBuilder().isSingleton().build();
+
+        Assertions.assertEquals(mapper.getProfiles(), mapper1.getProfiles());
+    }
+
+    @Test
+    @DisplayName("Test MapperBuilder2")
+    public void testMapperBuilder2()
+    {
+        Mapper mapper = new MapperBuilder().isSingleton().addMapping(new Mapping<>(Person1.class, Person2.class)).build();
+        Mapper mapper1 = new MapperBuilder().build();
+
+        Assertions.assertNotEquals(mapper.getMappings(), mapper1.getMappings());
     }
 
     @Test
@@ -338,8 +362,7 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
                 LocalDate.of(2004, 12, 12), "2020-12-10", null);
 
-        Mapper mapper = new Mapper(false);
-        mapper.addProfile(TestProfile.class);
+        Mapper mapper = new MapperBuilder().addProfile(new TestProfile()).build();
         Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual);
@@ -353,8 +376,7 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
                 LocalDate.of(2004, 12, 12), "2020-12-10", "+43 452 234234512");
 
-        Mapper mapper = new Mapper(false);
-        mapper.addProfile(TestProfile1.class);
+        Mapper mapper = new MapperBuilder().addProfile(new TestProfile1()).build();
         Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual);
@@ -368,8 +390,9 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
         //hierarchy = Parameter, Mapping
-        Mapper mapper = new Mapper(false);
-        mapper.addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT));
+        Mapper mapper = new MapperBuilder()
+                .addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT))
+                .build();
         Person2 actual = mapper.map(Person2.class, person, MappingType.MEDIUM);
 
         Assertions.assertEquals(expected, actual);
@@ -383,15 +406,13 @@ public class UnitTests {
         Person2 expected = new Person2("12", null, "john doe",
                 LocalDate.of(2004, 12, 12), "2020-12-10", "+43 452 234234512");
 
-        Mapper mapper = new Mapper(false);
-
-        Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
+        Mapper mapper = new MapperBuilder()
+                .addMapping(new Mapping<>(Person1.class, Person2.class)
                 .ignore(Person1::getName)
                 .forMember(Person1::getName, opt -> opt.mapTo(Person2::seteMail))
                 .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2))
-                .mappingType(MappingType.LOOSE);
-
-        mapper.addMapping(mapping);
+                .mappingType(MappingType.LOOSE))
+                .build();
 
         Person2 actual = mapper.map(Person2.class, person);
         Assertions.assertEquals(expected, actual);
@@ -405,15 +426,12 @@ public class UnitTests {
         Person2 expected = new Person2("12", null, "john doe",
                 LocalDate.of(2004, 12, 12), "2020-12-10", "+43 452 234234512");
 
-        Mapper mapper = new Mapper(false);
-
-        Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
+        Mapper mapper = new MapperBuilder().addMapping(new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getName, opt -> opt.mapTo(Person2::seteMail))
                 .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2))
                 .ignore(Person1::getName)
-                .mappingType(MappingType.LOOSE);
-
-        mapper.addMapping(mapping);
+                .mappingType(MappingType.LOOSE))
+                .build();
 
         Person2 actual = mapper.map(Person2.class, person);
         Assertions.assertEquals(expected, actual);
@@ -427,7 +445,7 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
                 LocalDate.of(2004, 12, 12), "2020-12-10", "+43 452 234234512");
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2));
@@ -447,14 +465,11 @@ public class UnitTests {
         Person2 expected = new Person2("12", "john doe", null,
                 LocalDate.of(2004, 12, 12), "2020-12-10", "+43 452 234234512");
 
-        Mapper mapper = new Mapper(false);
-
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2)).mappingType(MappingType.STRICT);
-
         Mapping<Person1, Person2> mapping1 = new Mapping<>(Person1.class, Person2.class).ignore(Person1::geteMail).mappingType(MappingType.LOOSE);
 
-        mapper.addMappings(mapping, mapping1);
+        Mapper mapper = new MapperBuilder().addMappings(mapping, mapping1).build();
 
         Person2 actual = mapper.map(Person2.class, person);
         Assertions.assertEquals(expected, actual);
@@ -463,7 +478,7 @@ public class UnitTests {
     @Test
     @DisplayName("Test add and remove mapping on Mapper")
     public void testAddRemoveMapping() {
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2));
@@ -479,7 +494,7 @@ public class UnitTests {
     @Test
     @DisplayName("Test add and remove mappings on Mapper 1")
     public void testAddRemoveMappings1() {
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2));
@@ -505,7 +520,7 @@ public class UnitTests {
     @Test
     @DisplayName("Test add and remove mappings on Mapper 2")
     public void testAddRemoveMappings2() {
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         Mapping<Person1, Person2> mapping = new Mapping<>(Person1.class, Person2.class)
                 .forMember(Person1::getPhone, opt -> opt.mapTo(Person2::setPhone2));
@@ -527,7 +542,7 @@ public class UnitTests {
     @Test
     @DisplayName("Test remove Profile")
     public void testRemoveProfile() {
-        Mapper mapper = new Mapper(true);
+        Mapper mapper = new MapperBuilder().autoDetectProfiles().build();
 
         Profile prof1 = new IgnoreAllProfile();
         Mapping<?, ?> mapping = prof1.getMappings().get(0);
@@ -544,7 +559,7 @@ public class UnitTests {
     @Test
     @DisplayName("Test add and removeProfile")
     public void testAddRemoveProfile() {
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         Profile prof1 = new IgnoreAllProfile();
         mapper.addProfile(prof1);
@@ -563,7 +578,7 @@ public class UnitTests {
     @Test
     @DisplayName("Test add and remove Profiles 1")
     public void testAddRemoveProfiles1() {
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
         mapper.addProfiles(new IgnoreAllProfile(), new TestProfile());
 
         Profile prof1 = new IgnoreAllProfile();
@@ -588,7 +603,7 @@ public class UnitTests {
     @Test
     @DisplayName("Test add and remove Profiles 2")
     public void testAddRemoveProfiles2() {
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         List<Profile> profiles = new ArrayList<>();
         profiles.add(new IgnoreAllProfile());
@@ -623,9 +638,11 @@ public class UnitTests {
         Person3 expected = new Person3(12, "john", "doe", "john.doe@foo.bar", "2004-12-12",
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
 
-        Mapper mapper = new Mapper(false);
-        mapper.addMapping(new Mapping<>(Person1.class, Person3.class).forMembers(x -> x.getName().split(" "),
-                opt -> opt.mapTo(Person3::setFirstname), x -> x.mapTo(Person3::setLastname)));
+        Mapper mapper = new MapperBuilder()
+                .addMapping(new Mapping<>(Person1.class, Person3.class).forMembers(x -> x.getName().split(" "),
+                opt -> opt.mapTo(Person3::setFirstname), x -> x.mapTo(Person3::setLastname)))
+                .build();
+
         Person3 actual = mapper.map(Person3.class, person, MappingType.STRICT);
 
         Assertions.assertEquals(expected, actual);
@@ -647,7 +664,8 @@ public class UnitTests {
         Thing2 expected = new Thing2(12, "thing", details2);
 
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
+
         mapper.addMapping(new Mapping<>(Thing1.class, Thing2.class)
                 .forMember(Thing1::getDetails, options -> options.mapTo((x,y) -> x.setDetails(mapper.mapList(Detail2.class, y)))));
 
@@ -671,7 +689,7 @@ public class UnitTests {
         CollectionsTestclass1 testclass = new CollectionsTestclass1(list1, set1, map1);
         CollectionsTestclass2 expected = new CollectionsTestclass2(list2, set2, map2);
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
         CollectionsTestclass2 actual = mapper.map(CollectionsTestclass2.class, testclass);
 
         Assertions.assertEquals(expected, actual);
@@ -693,7 +711,7 @@ public class UnitTests {
         Thing2 expected = new Thing2(12, "thing", details2);
 
 
-        Mapper mapper = new Mapper(false);
+        Mapper mapper = new MapperBuilder().build();
 
         ConversionManager.addConversion(new Conversion<>(Detail1.class, Detail2.class, MappingType.MEDIUM, x -> mapper.map(Detail2.class, x)));
 
