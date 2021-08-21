@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class MapperEngine {
-    private static final MappingType DEFAULT_MAPPING_TYPE = MappingType.MEDIUM;
     private static final int CACHE_SIZE = 200;
 
     private static final Map<Class<?>, List<PropertyDescriptor>> cache = Collections.synchronizedMap(new LinkedHashMap<Class<?>, List<PropertyDescriptor>>() {
@@ -17,11 +16,11 @@ public class MapperEngine {
         }
     });
 
-    protected static <S,T> T internalMap(T target, S source, MappingType mappingType, List<Mapping<?,?>> mappings)
+    protected static <S,T> T internalMap(T target, S source, List<Mapping<?,?>> mappings, MappingType mappingType, MappingType defaultMappyingType)
     {
         Mapping<S, T> mapping = searchForMapping(source, target, mappings);
 
-        MappingType usedMappingType = DEFAULT_MAPPING_TYPE;
+        MappingType usedMappingType = defaultMappyingType;
         List<Method> ignoredProperties = mapping.getIgnoredProperties();
 
         if (mappingType != null)

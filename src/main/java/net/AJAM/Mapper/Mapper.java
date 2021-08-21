@@ -16,7 +16,11 @@ public class Mapper {
 
     private static List<Profile> createdProfiles;
 
-    protected Mapper(boolean readProfiles) {
+    private MappingType defaultMappingType;
+
+    protected Mapper(boolean readProfiles, MappingType defaultMappingType) {
+        this.defaultMappingType = defaultMappingType;
+
         init(readProfiles);
     }
 
@@ -40,7 +44,7 @@ public class Mapper {
     }
 
     public <S, T> T map(T target, S source, MappingType mappingType) {
-        return MapperEngine.internalMap(target, source, mappingType, mappings);
+        return MapperEngine.internalMap(target, source, mappings, mappingType, defaultMappingType);
     }
 
     public <T, S> CompletableFuture<T> mapAsync(T target, S source, MappingType mappingType) {
@@ -83,12 +87,10 @@ public class Mapper {
         return CompletableFuture.supplyAsync(() -> mapList(targetType, source, mappingType));
     }
 
-    public Profile addProfile(Class<? extends Profile> profileClass) {
+    public void addProfile(Class<? extends Profile> profileClass) {
         try {
             Profile profile = profileClass.getDeclaredConstructor().newInstance();
             addProfile(profile);
-
-            return profile;
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new ReadProfilesFailedException("Error while creating Profile " + profileClass.getName() + ". Maybe you forgot the parameterless constructor");
         }
@@ -107,6 +109,12 @@ public class Mapper {
 
     public void addProfiles(Profile... profiles) {
         for (Profile profile : profiles) {
+            addProfile(profile);
+        }
+    }
+
+    public void addProfiles(Class<? extends Profile>... profiles) {
+        for (Class<? extends Profile> profile : profiles) {
             addProfile(profile);
         }
     }
@@ -179,19 +187,25 @@ public class Mapper {
         return profiles;
     }
 
-    public void reloadProfiles()
-    {
+    public void reloadProfiles() {
         createProfiles();
     }
 
+    public MappingType getDefaultMappingType() {
+        return defaultMappingType;
+    }
+
+    public void setDefaultMappingType(MappingType defaultMappingType) {
+        this.defaultMappingType = defaultMappingType;
+    }
+
     private void init(boolean readProfiles) {
-        if(readProfiles) {
-            if(createdProfiles == null)
+        if (readProfiles) {
+            if (createdProfiles == null)
                 createProfiles();
 
             profiles.addAll(createdProfiles);
-            for(Profile prof : createdProfiles)
-            {
+            for (Profile prof : createdProfiles) {
                 mappings.addAll(prof.getMappings());
             }
         }
@@ -199,8 +213,7 @@ public class Mapper {
         ConversionManager.initLooseConversions();
     }
 
-    private void createProfiles()
-    {
+    private void createProfiles() {
         createdProfiles = new ArrayList<>();
 
         Reflections reflections = new Reflections(new ConfigurationBuilder()

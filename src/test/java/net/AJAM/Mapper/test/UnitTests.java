@@ -389,8 +389,9 @@ public class UnitTests {
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
         Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
 
-        //hierarchy = Parameter, Mapping
+        //hierarchy = Parameter, Mapping, Default
         Mapper mapper = new MapperBuilder()
+                .defaultMappingType(MappingType.LOOSE)
                 .addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT))
                 .build();
         Person2 actual = mapper.map(Person2.class, person, MappingType.MEDIUM);
