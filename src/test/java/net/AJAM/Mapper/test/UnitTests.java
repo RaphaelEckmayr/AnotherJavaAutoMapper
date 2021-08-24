@@ -595,7 +595,7 @@ public class UnitTests {
     @Test
     @DisplayName("Test remove Profile")
     public void testRemoveProfile() {
-        Mapper mapper = new MapperBuilder().autoDetectProfiles().build();
+        Mapper mapper = new MapperBuilder().detectProfiles().build();
 
         Profile prof1 = new IgnoreAllProfile();
         Mapping<?, ?> mapping = prof1.getMappings().get(0);
@@ -771,5 +771,18 @@ public class UnitTests {
         Thing2 actual = mapper.map(Thing2.class, thing1, MappingType.LOOSE);
 
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test singleton")
+    public void testSingleton()
+    {
+        Mapper mapper = new MapperBuilder().isSingleton().build();
+        mapper.addProfile(TestProfile.class);
+        Mapper mapper1 = new MapperBuilder().isSingleton().build();
+        mapper1.addProfile(TestProfile1.class);
+
+        Assertions.assertEquals(mapper.getProfiles(), mapper1.getProfiles());
+        Assertions.assertEquals(mapper.getMappings(), mapper1.getMappings());
     }
 }

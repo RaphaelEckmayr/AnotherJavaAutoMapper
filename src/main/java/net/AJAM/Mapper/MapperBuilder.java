@@ -22,7 +22,7 @@ public class MapperBuilder {
         return this;
     }
 
-    public MapperBuilder autoDetectProfiles() {
+    public MapperBuilder detectProfiles() {
         readProfiles = true;
         return this;
     }
