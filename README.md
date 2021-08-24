@@ -6,7 +6,7 @@ AJAM is a more light weight and thread safe object mapping library for Java. It 
 ### Basics
 To do a very basic mapping operation you only have to do the following:
 ```java
-Mapper mapper = new Mapper();
+Mapper mapper = new MapperBuilder().build();
 mapper.map(TestClass.class, yourObject);
 ```
 It will automatically detect the getters and setters of your classes and will match them up by name and correct their datatypes if they don't match up (Default only primitive datatypes).
@@ -15,12 +15,12 @@ It will automatically detect the getters and setters of your classes and will ma
 ### MappingTypes
 If you want AJAM to not correct datatypes at all, or want it to detect other commonly used datatypes aswell, you can adjust the MappingType
 ```java
-Mapper mapper = new Mapper();
+Mapper mapper = new MapperBuilder().build();
 mapper.map(TestClass.class, yourObject, MappingType.LOOSE);
 ```
 There are 3 different values of MappingTypes:
 1. STRICT: Don't convert any datatypes
-2. MEDIUM: Only convert primitive datatypes
+2. MEDIUM: Only convert primitive datatypes (Default)
 3. LOOSE: Convert commonly used datatypes (Could lead to unexpected behavior)
 
 ### Mappings
@@ -30,13 +30,21 @@ Mappings are just basic instructions which tell AJAM what to do in certain cases
 
 For example:
 ```Java
-Mapper mapper = new Mapper();
-Mapping mapping = new Mapping<>(PersonDto.class, PersonEntity.class)
-                .ignore(Person1::getName)
-                .forMember(PersonDto::getName + "@mail.com", opt->opt.mapTo(PersonEntity::seteMail))
-                .forMember(PersonDto::getPhone, opt->opt.mapTo(PersonEntity::setPhoneNumber))
-                .mappingType(MappingType.LOOSE);
-mapper.addMapping(mapping);
+Mapper mapper = new MapperBuilder().addMapping(
+                new Mapping<>(PersonDto.class, PersonEntity.class)
+                    .ignore(Person1::getName)
+                    .forMember(PersonDto::getName + "@mail.com", opt->opt.mapTo(PersonEntity::seteMail))
+                    .forMember(PersonDto::getPhone, opt->opt.mapTo(PersonEntity::setPhoneNumber))
+                    .mappingType(MappingType.LOOSE))
+                .build()
+```
+or
+```
+mapper.addMapping(new Mapping<>(PersonDto.class, PersonEntity.class)
+                    .ignore(Person1::getName)
+                    .forMember(PersonDto::getName + "@mail.com", opt->opt.mapTo(PersonEntity::seteMail))
+                    .forMember(PersonDto::getPhone, opt->opt.mapTo(PersonEntity::setPhoneNumber))
+                    .mappingType(MappingType.LOOSE));
 ```
 If you don't want AJAMs default behavior in a certain case you can use `.ignore(x -> x.getWhatever())` and overwrite (or add) by using `.forMember(x -> x.getWhatever(), opt -> opt.mapTo((x,y) -> x.setWhatever2(y)))`
 
@@ -67,7 +75,7 @@ new Mapping<>(PersonEntity.class, PersonDto.class)
 ```
 
 ### Profiles
-Profiles are just a collection of Mappings which will automatically be loaded when creating a new Mapper with `new Mapper()`.
+Profiles are just a collection of Mappings which can be automatically loaded when creating a new Mapper with `new MapperBuilder().detectProfiles().build()`. It is turned off by default for performance reasons.
 
 ```java
 public class TestProfile extends Profile
@@ -82,11 +90,44 @@ public class TestProfile extends Profile
     }
 }
 ```
-A custom profile must always extend `Profile` otherwise it will be ignored. You can also ignore all Profiles on creation of the Mapper by using `new Mapper(false)` or add them by hand `mapper.addProfile(new CustomProfile())`.
+A custom profile must always extend `Profile` otherwise it will be ignored.
+
+You can also add them manually for better performance:
+```java
+Mapper mapper = new MapperBuilder().addProfile(new TestProfile()).build();
+```
+or
+```java
+mapper.addProfile(TestProfile.class);
+```
+
+### Instances
+You can use AJAM either as a singleton have multiple instances.
+```java
+Mapper mapper = new MapperBuilder().isSingleton().build();
+        mapper.addProfile(TestProfile.class);
+Mapper mapper1 = new MapperBuilder().isSingleton().build();
+```
+In this case mapper and mapper1 are the same instance of `Mapper`and share all profiles, mappings and default `MappingType`.
+
+```java
+Mapper mapper = new MapperBuilder().build();
+        mapper.addProfile(TestProfile.class);
+Mapper mapper1 = new MapperBuilder().build();
+```
+On the other hand you can have completly different instances of Mapper with different mappings, which makes sense when your mappings are coliding and AJAM has unwanted behavior.
+
+```java
+Mapper mapper = new MapperBuilder().isSingleton().build();
+        mapper.addProfile(TestProfile.class);
+Mapper mapper1 = new MapperBuilder().isSingleton().build();
+Mapper mapper2 = new MapperBuilder().build();
+```
+You can also mix them. In this case mapper and mapper1 are the same instance and mapper2 is a different one.
 
 ## Saving processing resources
-There are several ways to save processing resources at the cost of usability. That's because usually reflections are always slower than creating an object the normal way.
+There are several ways to save processing resources at the cost of usability. That's because usually reflections are always slower than creating an object the usual way.
 
-1. Use `mapper.map(new TestClass, yourObject)` instead of `mapper.map(TestClass.class, yourObject, MappingType.LOOSE)`
-2. Add profiles and mappings manually by using `new Mapper(false)` and adding Profiles by `mapper.addProfile(new TestProfile)`
+1. Use `mapper.map(new TestClass(), yourObject, MappingType.LOOSE)` instead of `mapper.map(TestClass.class, yourObject, MappingType.LOOSE)`
+2. Add profiles and mappings manually (Hinted in section Profiles)
 3. If it's still too slow, do it the old fashion way
