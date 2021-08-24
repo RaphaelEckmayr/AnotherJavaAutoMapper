@@ -236,105 +236,6 @@ public class UnitTests {
     }
 
     @Test
-    @DisplayName("Test strict mapping type as parameter")
-    public void testMapStrictParameter() {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12, 10), "+43 452 234234512");
-        Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
-
-        Mapper mapper = new MapperBuilder().build();
-        Person2 actual = mapper.map(Person2.class, person, MappingType.STRICT);
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    @DisplayName("Test medium mapping type as parameter")
-    public void testMapMediumParameter() {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12, 10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
-
-        Mapper mapper = new MapperBuilder().build();
-        Person2 actual = mapper.map(Person2.class, person, MappingType.MEDIUM);
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    @DisplayName("Test loose mapping type as parameter")
-    public void testMapLooseParameter() {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12, 10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12, 12), "2020-12-10", null);
-
-        Mapper mapper = new MapperBuilder().build();
-        Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    @DisplayName("Test none mapping type as parameter")
-    public void testMapNoneParameter() {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12, 10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
-
-        Mapper mapper = new MapperBuilder().build();
-        Person2 actual = mapper.map(Person2.class, person);
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    @DisplayName("Test strict mapping type as mapping")
-    public void testMapStrictMapping() {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12, 10), "+43 452 234234512");
-        Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
-
-        Mapper mapper = new MapperBuilder()
-                .addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT))
-                .build();
-        Person2 actual = mapper.map(Person2.class, person);
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    @DisplayName("Test medium mapping type as mapping")
-    public void testMapMediumMapping() {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12, 10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
-
-        Mapper mapper = new MapperBuilder().addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.MEDIUM)).build();
-
-        Person2 actual = mapper.map(Person2.class, person);
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    @DisplayName("Test loose mapping type as mapping")
-    public void testMapLooseMapping() {
-        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
-                LocalDate.of(2020, 12, 10), "+43 452 234234512");
-        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
-                LocalDate.of(2004, 12, 12), "2020-12-10", null);
-
-        Mapper mapper = new MapperBuilder()
-                .addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.LOOSE))
-                .build();
-
-        Person2 actual = mapper.map(Person2.class, person);
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
     @DisplayName("Test MapperBuilder1")
     public void testMapperBuilder1()
     {
@@ -352,6 +253,157 @@ public class UnitTests {
         Mapper mapper1 = new MapperBuilder().build();
 
         Assertions.assertNotEquals(mapper.getMappings(), mapper1.getMappings());
+    }
+
+    @Test
+    @DisplayName("Test STRICT MappingType as parameter")
+    public void testMapStrictParameter() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new MapperBuilder().build();
+        Person2 actual = mapper.map(Person2.class, person, MappingType.STRICT);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test MEDIUM MappingType as parameter")
+    public void testMapMediumParameter() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new MapperBuilder().build();
+        Person2 actual = mapper.map(Person2.class, person, MappingType.MEDIUM);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test LOOSE MappingType as parameter")
+    public void testMapLooseParameter() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12, 12), "2020-12-10", null);
+
+        Mapper mapper = new MapperBuilder().build();
+        Person2 actual = mapper.map(Person2.class, person, MappingType.LOOSE);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test with no MappingType")
+    public void testMapNoneParameter() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new MapperBuilder().build();
+        Person2 actual = mapper.map(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test STRICT MappingType in Mapping")
+    public void testMapStrictMapping() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new MapperBuilder()
+                .addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.STRICT))
+                .build();
+        Person2 actual = mapper.map(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test MEDIUM MappingType in Mapping")
+    public void testMapMediumMapping() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new MapperBuilder().addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.MEDIUM)).build();
+
+        Person2 actual = mapper.map(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test LOOSE MappingType in Mapping")
+    public void testMapLooseMapping() {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12, 12), "2020-12-10", null);
+
+        Mapper mapper = new MapperBuilder()
+                .addMapping(new Mapping<>(Person1.class, Person2.class).mappingType(MappingType.LOOSE))
+                .build();
+
+        Person2 actual = mapper.map(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test STRICT MappingType in builder")
+    public void testMapStrictBuilder()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2(null, "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new MapperBuilder()
+                .defaultMappingType(MappingType.STRICT)
+                .build();
+
+        Person2 actual = mapper.map(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test MEDIUM MappingType in builder")
+    public void testMapMediumBuilder()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar", null, null, null);
+
+        Mapper mapper = new MapperBuilder()
+                .defaultMappingType(MappingType.MEDIUM)
+                .build();
+
+        Person2 actual = mapper.map(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test LOOSE MappingType in builder")
+    public void testMapLooseBuilder()
+    {
+        Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
+                LocalDate.of(2020, 12, 10), "+43 452 234234512");
+        Person2 expected = new Person2("12", "john doe", "john.doe@foo.bar",
+                LocalDate.of(2004, 12, 12), "2020-12-10", null);
+
+        Mapper mapper = new MapperBuilder()
+                .defaultMappingType(MappingType.LOOSE)
+                .build();
+
+        Person2 actual = mapper.map(Person2.class, person);
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
