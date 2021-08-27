@@ -13,7 +13,7 @@ Mapper mapper = new MapperBuilder().build();
         mapper.addProfile(TestProfile.class);
 Mapper mapper1 = new MapperBuilder().build();
 ```
-On the other hand you can have completly different instances of Mapper with different mappings, which makes sense when your mappings are coliding and AJAM has unwanted behavior.
+On the other hand you can have completly different instances of Mapper with different mappings, which makes sense when your mappings are colliding and AJAM has unwanted behavior.
 
 ```java
 Mapper mapper = new MapperBuilder().isSingleton().build();
