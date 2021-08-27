@@ -1,4 +1,4 @@
-# [AJAM: AnotherJavaAutoMapper](https://raphaeleckmayr.github.io/AnotherJavaAutoMapper)
+# [AJAM - AnotherJavaAutoMapper](https://raphaeleckmayr.github.io/AnotherJavaAutoMapper)
 # Instances:
 You can use AJAM either as a singleton have multiple instances.
 ```java
