@@ -17,12 +17,12 @@ public class TestProfile extends Profile
 }
 ```
 
-### Detect Automatically:
+### Detect Automatically
 This is operation is really expensive and slow for the first time. It is cached after the first initialization.
 ```java
   Mapper mapper = new MapperBuilder().detectProfiles().build();
 ```
-### Add manually:
+### Add manually
 ```java
   Mapper mapper = new MapperBuilder().addProfile(new TestProfile()).build();
 ```
@@ -31,7 +31,7 @@ or
 mapper.addProfile(TestProfile.class);
 ```
 
-### Remove Profile:
+### Remove Profile
 You can also remove Profiles during runtime. 
 ```java
 mapper.removeProfile(TestProfile.class);
