@@ -1,3 +1,4 @@
+# AJAM: AnotherJavaAutoMapper
 # Getting Started:
 AJAM is based on reflections and will math up the getters and setters of your classes by name. It will also correct their data types if necessary. By default it will only correct primitive datatypes (e.g. `String`, `int`, `long`, ...)
 ## Basics:
