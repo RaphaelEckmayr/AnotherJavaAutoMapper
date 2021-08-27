@@ -1,11 +1,11 @@
 # [AJAM: AnotherJavaAutoMapper](https://raphaeleckmayr.github.io/AnotherJavaAutoMapper)
 
-# Mappings
+# Mappings:
 In some cases just matching up getters and setters by name is simply not enough. In these cases you can adjust AJAMs behavior by adding Mappings.
 
 Mappings are just basic instructions for 2 specific classes which tell AJAM what to do in certain cases.
 
-## Add Mappings
+## Add Mappings:
 You can add Mappings to your Mapper in 3 different ways:
 
 ### In the MapperBuilder:
