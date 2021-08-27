@@ -1,4 +1,4 @@
-# AJAM: AnotherJavaAutoMapper
+# AJAM - AnotherJavaAutoMapper
 
 AJAM is a more light weight and thread safe object mapping library for Java. It was created to simplify type conversions in a way that is user friendly and still efficient. With it's refactoring safe API you can also alter it's behavior easily. AJAM can also automatically convert types like String to Integer within your class to improve usability.
 
