@@ -33,10 +33,10 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
             }
 
             if (mappingType != MappingType.STRICT) {
-                ConversionFunction conversion =
-                        ConversionManager.getConversionFunction(getter.getPropertyType(), setter.getPropertyType(), mappingType);
+                Conversion conversion =
+                        ConversionManager.getConversion(getter.getPropertyType(), setter.getPropertyType(), mappingType);
                 if (conversion != null)
-                    setter.getWriteMethod().invoke(target, conversion.convert(getter.getReadMethod().invoke(source)));
+                    setter.getWriteMethod().invoke(target, conversion.getConversionFunction().convert(getter.getReadMethod().invoke(source)));
             }
         } catch (Exception e) {
             return false;
@@ -139,20 +139,20 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
 
         if(sourceTypes[0] != targetTypes[0] && sourceTypes[1] != targetTypes[1])
         {
-            ConversionFunction conversion = getConversionByTypeParameter(sourceTypes[0], targetTypes[0], mappingType);
-            ConversionFunction conversion1 = getConversionByTypeParameter(sourceTypes[1], targetTypes[1], mappingType);
+            ConversionFunction conversion = getConversionFunctionByTypeParameter(sourceTypes[0], targetTypes[0], mappingType);
+            ConversionFunction conversion1 = getConversionFunctionByTypeParameter(sourceTypes[1], targetTypes[1], mappingType);
             if (conversion == null || conversion1 == null) return false;
             for (Object key : getterRes.keySet()) {
                 result.put(conversion.convert(key), conversion1.convert(getterRes.get(key)));
             }
         } else if (sourceTypes[0] != targetTypes[0]) {
-            ConversionFunction conversion = getConversionByTypeParameter(sourceTypes[0], targetTypes[0], mappingType);
+            ConversionFunction conversion = getConversionFunctionByTypeParameter(sourceTypes[0], targetTypes[0], mappingType);
             if (conversion == null) return false;
             for (Object key : getterRes.keySet()) {
                 result.put(conversion.convert(key), getterRes.get(key));
             }
         } else if (sourceTypes[1] != targetTypes[1]) {
-            ConversionFunction conversion = getConversionByTypeParameter(sourceTypes[1], targetTypes[1], mappingType);
+            ConversionFunction conversion = getConversionFunctionByTypeParameter(sourceTypes[1], targetTypes[1], mappingType);
             if (conversion == null) return false;
             for (Object key : getterRes.keySet()) {
                 result.put(key, conversion.convert(getterRes.get(key)));
@@ -174,15 +174,19 @@ class BaseTranslation<S, T, V> extends Translation<S, T, V> {
         if (Arrays.equals(sourceTypes, targetTypes))
             throw new TypeParameterException("SourceTypes != targetTypes");
 
-        return getConversionByTypeParameter(sourceTypes[0], targetTypes[0], mappingType);
+        return getConversionFunctionByTypeParameter(sourceTypes[0], targetTypes[0], mappingType);
     }
 
     @SuppressWarnings("rawtypes")
-    private ConversionFunction getConversionByTypeParameter(Type sourceType, Type targetType, MappingType mappingType) {
+    private ConversionFunction getConversionFunctionByTypeParameter(Type sourceType, Type targetType, MappingType mappingType) {
         Class<?> sourceClass = (Class<?>) sourceType;
         Class<?> targetClass = (Class<?>) targetType;
 
-        return ConversionManager.getConversionFunction(sourceClass, targetClass, mappingType);
+        Conversion conv = ConversionManager.getConversion(sourceClass, targetClass, mappingType);
+        if(conv != null)
+            return conv.getConversionFunction();
+
+        return null;
     }
 
     @Override

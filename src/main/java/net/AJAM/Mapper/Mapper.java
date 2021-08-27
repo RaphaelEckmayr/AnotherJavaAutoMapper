@@ -14,7 +14,7 @@ public class Mapper {
     private final List<Mapping<?, ?>> mappings = Collections.synchronizedList(new ArrayList<>());
     private final List<Profile> profiles = Collections.synchronizedList(new ArrayList<>());
 
-    private static List<Profile> createdProfiles;
+    private static List<Profile> detectedProfiles;
 
     private MappingType defaultMappingType;
 
@@ -187,8 +187,28 @@ public class Mapper {
         return profiles;
     }
 
+    public static List<Conversion<?, ?>> getConversions() {
+        return ConversionManager.getConversions();
+    }
+
+    public static void addConversion(Conversion<?,?> conversion){
+        ConversionManager.addConversion(conversion);
+    }
+
+    public static void addConversions(Conversion<?,?>... conversion){
+        ConversionManager.addConversions(Arrays.asList(conversion));
+    }
+
+    public static void addConversions(List<Conversion<?,?>> conversion){
+        ConversionManager.addConversions(conversion);
+    }
+
+    public static void removeConversion(Class<?> source, Class<?> target){
+        ConversionManager.removeConversion(ConversionManager.getConversion(source, target, MappingType.LOOSE));
+    }
+
     public void reloadProfiles() {
-        createProfiles();
+        detectProfiles();
     }
 
     public MappingType getDefaultMappingType() {
@@ -201,11 +221,11 @@ public class Mapper {
 
     private void init(boolean readProfiles) {
         if (readProfiles) {
-            if (createdProfiles == null)
-                createProfiles();
+            if (detectedProfiles == null)
+                detectProfiles();
 
-            profiles.addAll(createdProfiles);
-            for (Profile prof : createdProfiles) {
+            profiles.addAll(detectedProfiles);
+            for (Profile prof : detectedProfiles) {
                 mappings.addAll(prof.getMappings());
             }
         }
@@ -213,8 +233,8 @@ public class Mapper {
         ConversionManager.initLooseConversions();
     }
 
-    private void createProfiles() {
-        createdProfiles = new ArrayList<>();
+    private void detectProfiles() {
+        detectedProfiles = new ArrayList<>();
 
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage(""))
@@ -232,7 +252,7 @@ public class Mapper {
         for (Class<? extends Profile> profileType : profileTypes) {
             try {
                 Profile profile = profileType.getDeclaredConstructor().newInstance();
-                createdProfiles.add(profile);
+                detectedProfiles.add(profile);
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new ReadProfilesFailedException("Error while creating Profile " + profileType.getName() + ". Maybe you forgot the parameterless constructor");
             }

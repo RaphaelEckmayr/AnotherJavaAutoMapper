@@ -4,51 +4,36 @@ import net.AJAM.Mapper.Interfaces.ConversionFunction;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class ConversionManager {
-    private static final List<Conversion<?, ?>> conversions = new ArrayList<>();
+    private static final List<Conversion<?, ?>> conversions = Collections.synchronizedList(new ArrayList<>());
 
-    public static ConversionFunction<?, ?> getConversionFunction(Class<?> from, Class<?> to, MappingType mappingType) {
+    protected static Conversion<?, ?> getConversion(Class<?> from, Class<?> to, MappingType mappingType) {
         for (Conversion<?, ?> conv : conversions) {
             if (from == conv.getFrom() && to == conv.getTo() &&
                     (mappingType == conv.getMappingType() || mappingType == MappingType.LOOSE)) {
-                return conv.getConversionFunction();
+                return conv;
             }
         }
 
         return null;
     }
 
-    public static List<Conversion<?, ?>> getConversions() {
+    protected static List<Conversion<?, ?>> getConversions() {
         return conversions;
     }
 
-    public static void addConversion(Conversion<?,?> conversion){
+    protected static void addConversion(Conversion<?,?> conversion){
         conversions.add(conversion);
     }
 
-    public static void addConversions(Conversion<?,?>... conversion){
-        conversions.addAll(Arrays.asList(conversion));
-    }
-
-    public static void addConversions(List<Conversion<?,?>> conversion){
+    protected static void addConversions(List<Conversion<?,?>> conversion){
         conversions.addAll(conversion);
     }
 
-    public static void removeConversion(Conversion<?,?> conversion){
+    protected static void removeConversion(Conversion<?,?> conversion){
         conversions.remove(conversion);
-    }
-
-    public static void removeConversion(Conversion<?,?>... conversion){
-        conversions.removeAll(Arrays.asList(conversion));
-    }
-
-    public static void removeConversions(List<Conversion<?,?>> conversion){
-        conversions.addAll(conversion);
     }
 
     protected static void initLooseConversions() {

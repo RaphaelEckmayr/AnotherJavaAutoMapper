@@ -766,7 +766,7 @@ public class UnitTests {
 
         Mapper mapper = new MapperBuilder().build();
 
-        ConversionManager.addConversion(new Conversion<>(Detail1.class, Detail2.class, MappingType.MEDIUM, x -> mapper.map(Detail2.class, x)));
+        Mapper.addConversion(new Conversion<>(Detail1.class, Detail2.class, MappingType.MEDIUM, x -> mapper.map(Detail2.class, x)));
 
         Thing2 actual = mapper.map(Thing2.class, thing1, MappingType.LOOSE);
 
