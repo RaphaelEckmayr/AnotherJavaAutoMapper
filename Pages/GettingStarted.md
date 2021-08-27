@@ -7,26 +7,6 @@ To do a basic mapping operation you only have to create a new Mapper via the Map
 Mapper mapper = new MapperBuilder().build();
 mapper.map(TestClass.class, yourObject);
 ```
-
-## MappingTypes:
-AJAM has 3 different `MappingTypes` with different meanings. MappingTypes tell AJAM which types it should automatically convert.
-
-* LOOSE: [All present in ConversionManager](https://github.com/RaphaelEckmayr/AnotherJavaAutoMapper/blob/main/src/main/java/net/AJAM/Mapper/ConversionManager.java)
-* MEDIUM: Only primitive data types
-* STRICT: Do not convert
-
-## Overloads of map():
-### map(Class<T> targetType, S source)
-  Used to create a new object of targetType and map everything from source to target.
-  
-### map(Class<T> targetType, S source, MappingType mappingType)
-  Same as above, however you can override the default `MappingType` of the AJAM for this operation.
-  
-### map(T target, S source)
-  Used to map onto an already existing object. This is overall faster and recommended when performance is a factor.
-
-### map(T target, S source, MappingType mappingType)
-  Same as above, however you can override the default `MappingType` of the AJAM for this operation.
   
 ## Mappings:
 Mappings are instructions for AJAM to follow, for mapping operations between two specific classes. They can be added to the Mapper directly in two different ways.
@@ -48,6 +28,42 @@ or
                     .mappingType(MappingType.LOOSE));
 ```
 More in depth explaination [here]("https://raphaeleckmayr.github.io/AnotherJavaAutoMapper/Pages/Mappings.html")
+
+## MappingTypes:
+AJAM has 3 different `MappingTypes` with different meanings. MappingTypes tell AJAM which types it should automatically convert.
+
+* LOOSE: [All present in ConversionManager](https://github.com/RaphaelEckmayr/AnotherJavaAutoMapper/blob/main/src/main/java/net/AJAM/Mapper/ConversionManager.java)
+* MEDIUM: Only primitive data types
+* STRICT: Do not convert
+
+### You can set them in 3 different ways (ranked by priority):
+Set default MappingType for the Mapper (Effects every mapping operation done with this Mapper):
+```java
+Mapper mapper = new MapperBuilder()
+                .defaultMappingType(MappingType.STRICT)
+                .build();
+```
+Set MappingType for Mapping (Only effects classes of Mapping):
+```java
+new Mapping<>(PersonDto.class, PersonEntity.class).mappingType(MappingType.STRICT);
+```
+Set MappingType for single operation:
+```java
+mapper.map(PersonDto.class, source, MappingType.LOOSE);
+```
+
+## Overloads of map():
+### map(Class<T> targetType, S source)
+  Used to create a new object of targetType and map everything from source to target.
+  
+### map(Class<T> targetType, S source, MappingType mappingType)
+  Same as above, however you can override the default `MappingType` of the AJAM for this operation.
+  
+### map(T target, S source)
+  Used to map onto an already existing object. This is overall faster and recommended when performance is a factor.
+
+### map(T target, S source, MappingType mappingType)
+  Same as above, however you can override the default `MappingType` of the AJAM for this operation.
   
 ## Profiles:
 Profiles are collections of Mappings which can be automatically detected on creation of the Mapper or added manually. They help to seperate your Mappings from the rest of your code.
