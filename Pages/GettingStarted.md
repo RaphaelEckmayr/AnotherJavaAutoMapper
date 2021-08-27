@@ -1,14 +1,14 @@
-# [AJAM: AnotherJavaAutoMapper](https://raphaeleckmayr.github.io/AnotherJavaAutoMapper)
+# [AJAM - AnotherJavaAutoMapper](https://raphaeleckmayr.github.io/AnotherJavaAutoMapper)
 # Getting Started:
 AJAM is based on reflections and will math up the getters and setters of your classes by name. It will also correct their data types if necessary. By default it will only correct primitive datatypes (e.g. `String`, `int`, `long`, ...)
-## Basics:
+## Basics
 To do a basic mapping operation you only have to create a new Mapper via the MapperBuilder and call the `map` method.
 ```java
 Mapper mapper = new MapperBuilder().build();
 mapper.map(TestClass.class, yourObject);
 ```
   
-## Mappings:
+## Mappings
 Mappings are instructions for AJAM to follow, for mapping operations between two specific classes. They can be added to the Mapper directly in two different ways.
 ```java
   Mapper mapper = new MapperBuilder().addMapping(
@@ -29,14 +29,14 @@ or
 ```
 More in depth explaination [here]("https://raphaeleckmayr.github.io/AnotherJavaAutoMapper/Pages/Mappings.html")
 
-## MappingTypes:
+## MappingTypes
 AJAM has 3 different `MappingTypes` with different meanings. MappingTypes tell AJAM which types it should automatically convert.
 
 * LOOSE: [All present in ConversionManager](https://github.com/RaphaelEckmayr/AnotherJavaAutoMapper/blob/main/src/main/java/net/AJAM/Mapper/ConversionManager.java)
 * MEDIUM: Only primitive data types
 * STRICT: Do not convert
 
-### You can set them in 3 different ways (ranked by priority):
+### You can set them in 3 different ways (ranked by priority)
 Set default MappingType for the Mapper (Effects every mapping operation done with this Mapper):
 ```java
 Mapper mapper = new MapperBuilder()
@@ -52,7 +52,7 @@ Set MappingType for single operation:
 mapper.map(PersonDto.class, source, MappingType.LOOSE);
 ```
 
-## Overloads of map():
+## Overloads of map()
 ### map(Class<T> targetType, S source)
   Used to create a new object of targetType and map everything from source to target.
   
@@ -65,7 +65,7 @@ mapper.map(PersonDto.class, source, MappingType.LOOSE);
 ### map(T target, S source, MappingType mappingType)
   Same as above, however you can override the default `MappingType` of the AJAM for this operation.
   
-## Profiles:
+## Profiles
 Profiles are collections of Mappings which can be automatically detected on creation of the Mapper or added manually. They help to seperate your Mappings from the rest of your code.
 Profiles need to extend the `Profile` class and have a parameterless constructor to work.
 ```java
