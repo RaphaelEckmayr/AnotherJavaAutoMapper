@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class UnitTests {
     @Test
-    @DisplayName("Usual way vs Mapper")
+    @DisplayName("Test Usual way vs Mapper")
     public void testBasics() {
         Person1 person = new Person1(12, "john doe", "john.doe@foo.bar", "2004-12-12",
                 LocalDate.of(2020, 12, 10), "+43 452 234234512");
@@ -702,7 +702,7 @@ public class UnitTests {
     }
 
     @Test
-    @DisplayName("Map in Mapping")
+    @DisplayName("Test map in Mapping")
     public void testMapInMapping()
     {
         List<Detail1> details1 = new ArrayList<>();
@@ -728,7 +728,7 @@ public class UnitTests {
     }
 
     @Test
-    @DisplayName("Test Map Collections")
+    @DisplayName("Test map Collections")
     public void testMapCollections()
     {
         List<String> list1 = Arrays.asList("1", "2", "3");
@@ -739,17 +739,17 @@ public class UnitTests {
         Set<Integer> set2 = new HashSet<Integer>() {{add(1); add(2); add(3);}};
         Map<Integer, String> map2= new HashMap<Integer, String>() {{put(1, "1"); put(2,"2"); put(3, "3");}};
 
-        CollectionsTestclass1 testclass = new CollectionsTestclass1(list1, set1, map1);
+        CollectionsTestclass1 testClass = new CollectionsTestclass1(list1, set1, map1);
         CollectionsTestclass2 expected = new CollectionsTestclass2(list2, set2, map2);
 
         Mapper mapper = new MapperBuilder().build();
-        CollectionsTestclass2 actual = mapper.map(CollectionsTestclass2.class, testclass);
+        CollectionsTestclass2 actual = mapper.map(CollectionsTestclass2.class, testClass);
 
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    @DisplayName("Map in Conversion")
+    @DisplayName("Test map in Conversion")
     public void testMapInConversion()
     {
         List<Detail1> details1 = new ArrayList<>();
@@ -784,5 +784,18 @@ public class UnitTests {
 
         Assertions.assertEquals(mapper.getProfiles(), mapper1.getProfiles());
         Assertions.assertEquals(mapper.getMappings(), mapper1.getMappings());
+    }
+
+    @Test
+    @DisplayName("Test not singleton")
+    public void testNotSingleton()
+    {
+        Mapper mapper = new MapperBuilder().isSingleton().build();
+        mapper.addProfile(TestProfile.class);
+        Mapper mapper1 = new MapperBuilder().build();
+        mapper1.addProfile(TestProfile1.class);
+
+        Assertions.assertNotEquals(mapper.getProfiles(), mapper1.getProfiles());
+        Assertions.assertNotEquals(mapper.getMappings(), mapper1.getMappings());
     }
 }
